@@ -1,0 +1,2252 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self' http://127.0.0.1:* https://webapi.sporttery.cn; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>玄枢阁 · 天机串关演算</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='8' fill='%23A12B26'/%3E%3Ctext x='32' y='46' font-size='40' text-anchor='middle' fill='%23FBF3E4' font-family='KaiTi,serif'%3E%E7%8E%84%3C/text%3E%3C/svg%3E">
+<meta name="description" content="玄枢阁——以姓名、生辰、生肖、时辰与赔率数字取象起卦，推演竞彩足球串关组合。纯玄学娱乐，不构成投注建议。">
+<style>
+/* ==================== 基础 ==================== */
+:root{
+  --paper:#F7F0E3; --paper-2:#FBF5E9; --paper-3:#EFE4CF;
+  --ink:#231E19; --ink-2:#4B4137; --ink-3:#857767;
+  --cinnabar:#A12B26; --cinnabar-2:#BC3A32; --seal:#B03A2E;
+  --gold:#B5894A; --gold-2:#D8BB86; --gold-3:rgba(181,137,74,.30);
+  --jade:#43655B;
+  --line:rgba(35,30,25,.14);
+  --serif:"Songti SC","STSong","Source Han Serif SC","Noto Serif SC","SimSun",serif;
+  --kai:"Kaiti SC","STKaiti","KaiTi","楷体",var(--serif);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  font-family:var(--serif); color:var(--ink); background-color:var(--paper);
+  background-image:
+    radial-gradient(1200px 500px at 12% -8%, rgba(181,137,74,.16), transparent 60%),
+    radial-gradient(900px 420px at 92% 6%, rgba(161,43,38,.09), transparent 62%),
+    radial-gradient(1000px 700px at 50% 110%, rgba(67,101,91,.10), transparent 65%);
+  background-attachment:fixed;
+  line-height:1.75; font-size:15px; min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+}
+.grain{
+  position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.5; mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='0 .05'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.wrap{position:relative; z-index:1; max-width:1120px; margin:0 auto; padding:0 20px 64px}
+
+/* ==================== 报头 ==================== */
+.hero{position:relative; padding:52px 0 30px; text-align:center}
+.hero .seal-logo{
+  width:52px;height:52px;margin:0 auto 16px; border-radius:3px; background:linear-gradient(150deg,#B0332C,#8E211C);
+  color:#FBF3E4; font-family:var(--kai); font-size:28px; line-height:52px; letter-spacing:0;
+  box-shadow:0 6px 18px -8px rgba(161,43,38,.75), inset 0 0 0 1px rgba(255,255,255,.28);
+  transform:rotate(-2deg);
+}
+.hero h1{
+  font-family:var(--kai); font-size:clamp(34px,6vw,50px); font-weight:600; margin:0;
+  letter-spacing:.34em; text-indent:.34em; color:var(--ink);
+  text-shadow:0 1px 0 rgba(255,255,255,.85);
+}
+.hero .sub{
+  margin:12px 0 0; font-size:13px; letter-spacing:.42em; text-indent:.42em; color:var(--ink-3);
+}
+.hero .hdate{
+  margin-top:16px; display:inline-flex; gap:14px; align-items:center; font-size:12.5px; color:var(--gold);
+  letter-spacing:.14em;
+}
+.hero .hdate::before,.hero .hdate::after{content:''; width:52px; height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold-3),var(--gold))}
+.hero .hdate::after{background:linear-gradient(90deg,var(--gold),var(--gold-3),transparent)}
+.hero-v{position:absolute; right:0; top:56px; writing-mode:vertical-rl; font-family:var(--kai);
+  font-size:13px; letter-spacing:.5em; color:rgba(35,30,25,.30)}
+.hero-v i{font-style:normal}
+
+/* ==================== 卡片 ==================== */
+.card{
+  position:relative; margin-top:26px; padding:24px 26px 26px;
+  background:linear-gradient(178deg,#FFFDF7 0%,#FBF4E6 62%,#F8EFDD 100%);
+  border:1px solid rgba(181,137,74,.42); border-radius:2px;
+  box-shadow:0 1px 0 rgba(255,255,255,.9) inset, 0 22px 46px -38px rgba(35,30,25,.75);
+}
+.card::before{content:''; position:absolute; inset:7px; border:1px solid rgba(181,137,74,.22); pointer-events:none}
+.card::after{
+  content:''; position:absolute; inset:3px; pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22'%3E%3Cg fill='none' stroke='%23B5894A' stroke-width='1' opacity='0.55'%3E%3Crect x='0.5' y='0.5' width='21' height='21'/%3E%3Crect x='4.5' y='4.5' width='13' height='13'/%3E%3Ccircle cx='11' cy='11' r='1.4' fill='%23B5894A' stroke='none'/%3E%3C/g%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-size:18px 18px;
+  background-position:0 0, calc(100% - 0px) 0, 0 calc(100% - 0px), calc(100% - 0px) calc(100% - 0px);
+}
+.sec-head{display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:6px; position:relative; z-index:1}
+.sec-idx{
+  width:28px;height:28px; flex:0 0 28px; display:grid; place-items:center; font-family:var(--kai);
+  font-size:15px; color:#FBF3E4; background:linear-gradient(150deg,#AC332C,#8A1F1A); border-radius:2px;
+  box-shadow:0 4px 12px -8px rgba(161,43,38,.9);
+}
+.sec-head h2{font-family:var(--kai); font-size:19px; font-weight:600; margin:0; letter-spacing:.16em}
+.sec-hint{font-size:12px; color:var(--ink-3); letter-spacing:.1em}
+.sec-tools{margin-left:auto; display:flex; align-items:center; gap:8px}
+
+/* ==================== 按钮 ==================== */
+.btn{
+  font-family:var(--serif); font-size:13.5px; letter-spacing:.12em; cursor:pointer;
+  padding:8px 16px; border-radius:2px; border:1px solid var(--line); background:transparent; color:var(--ink-2);
+  transition:.22s ease; position:relative; z-index:1;
+}
+.btn:hover{border-color:var(--gold); color:var(--ink); background:rgba(181,137,74,.10)}
+.btn:active{transform:translateY(1px)}
+.btn:disabled{opacity:.42; cursor:not-allowed; transform:none}
+.btn:focus-visible,.dtab:focus-visible,.seg button:focus-visible,.pbtn:focus-visible,
+.manual summary:focus-visible,.alt summary:focus-visible{
+  outline:2px solid var(--cinnabar); outline-offset:3px;
+}
+.btn.primary{
+  color:#FCF4E5; border-color:#8A1F1A;
+  background:linear-gradient(160deg,#B0332C,#8E211C 70%,#7A1B16);
+  box-shadow:0 10px 22px -14px rgba(161,43,38,.95), inset 0 1px 0 rgba(255,255,255,.22);
+  padding:11px 30px; font-size:14.5px; letter-spacing:.24em; text-indent:.24em;
+}
+.btn.primary:hover{background:linear-gradient(160deg,#BD3A32,#95241E 70%,#811D18); color:#fff}
+.btn.block{width:100%; padding:12px}
+
+/* ==================== 状态提示 ==================== */
+.pill{
+  display:inline-flex; align-items:center; gap:6px; font-size:11.5px; letter-spacing:.08em;
+  padding:3px 10px; border-radius:999px; border:1px solid var(--gold-3); color:var(--ink-3); background:rgba(255,255,255,.5);
+}
+.pill.ok{color:var(--jade); border-color:rgba(67,101,91,.35); background:rgba(67,101,91,.07)}
+.pill.warn{color:#96672A; border-color:rgba(181,137,74,.5); background:rgba(181,137,74,.10)}
+.pill.err{color:var(--cinnabar); border-color:rgba(161,43,38,.4); background:rgba(161,43,38,.07)}
+.dot{width:5px;height:5px;border-radius:50%;background:currentColor;box-shadow:0 0 0 3px rgba(0,0,0,.05)}
+.notice{
+  position:relative; z-index:1; margin:12px 0 0; padding:10px 14px 10px 34px; font-size:13px; color:var(--ink-2);
+  background:rgba(161,43,38,.055); border:1px solid rgba(161,43,38,.18); border-radius:2px; line-height:1.6;
+}
+.notice::before{content:'※'; position:absolute; left:13px; top:9px; color:var(--cinnabar); font-size:13px}
+.notice.soft{background:rgba(181,137,74,.09); border-color:rgba(181,137,74,.28)}
+.notice.soft::before{content:'◈'; color:var(--gold)}
+
+/* ==================== 日期签 ==================== */
+.date-tabs{position:relative; z-index:1; display:flex; gap:8px; flex-wrap:wrap; margin:16px 0 4px}
+.dtab{
+  font-family:var(--serif); cursor:pointer; padding:7px 15px; font-size:13px; letter-spacing:.06em;
+  background:rgba(255,255,255,.55); border:1px solid var(--line); border-radius:2px; color:var(--ink-2);
+  transition:.2s;
+}
+.dtab small{display:block; font-size:10.5px; color:var(--ink-3); letter-spacing:.04em; margin-top:1px}
+.dtab:hover{border-color:var(--gold-3)}
+.dtab.on{background:linear-gradient(160deg,#FFFDF8,#F4E8D2); border-color:var(--gold); color:var(--cinnabar); box-shadow:inset 0 -2px 0 var(--cinnabar)}
+.dtab.on small{color:var(--gold)}
+
+/* ==================== 赛事 ==================== */
+.match-list{position:relative; z-index:1; margin-top:12px; display:grid; gap:10px}
+.mrow{
+  display:grid; grid-template-columns:1fr auto; gap:14px 18px; align-items:center;
+  padding:13px 16px; border:1px solid rgba(35,30,25,.10); border-left:2px solid var(--gold-3);
+  background:rgba(255,255,255,.52); border-radius:2px; transition:.2s;
+}
+.mrow:hover{border-left-color:var(--cinnabar); background:rgba(255,255,255,.82)}
+.mmeta{display:flex; align-items:center; gap:9px; flex-wrap:wrap; margin-bottom:6px}
+.mnum{font-family:var(--kai); font-size:12.5px; color:var(--cinnabar); letter-spacing:.05em;
+  border:1px solid rgba(161,43,38,.3); padding:0 6px; border-radius:2px; line-height:1.7}
+.mleague{font-size:12px; color:var(--ink-3); letter-spacing:.08em}
+.mtime{font-size:11.5px; color:var(--ink-3); opacity:.85; font-variant-numeric:tabular-nums}
+.mteams{font-family:var(--kai); font-size:16.5px; letter-spacing:.04em; color:var(--ink)}
+.mteams em{font-style:normal; font-size:11.5px; color:var(--ink-3); padding:0 8px; letter-spacing:.1em}
+.odds-wrap{display:flex; gap:14px; flex-wrap:wrap; justify-content:flex-end; align-items:center}
+.ogroup{display:flex; align-items:center; gap:7px}
+.ogroup .og-title{
+  font-size:10.5px; color:var(--ink-3); letter-spacing:.04em; white-space:nowrap;
+  padding:2px 0; line-height:1.3;
+}
+.ogroup .og-title .oline{display:block; font-size:9.5px; color:var(--gold); letter-spacing:0; margin-top:1px}
+.ocells{display:flex; gap:4px}
+.ocell{
+  min-width:50px; text-align:center; padding:2px 4px; border:1px solid rgba(35,30,25,.10);
+  background:rgba(255,255,255,.6); border-radius:2px;
+}
+.ocell b{display:block; font-family:var(--kai); font-size:13.5px; font-weight:600; letter-spacing:0;
+  line-height:1.35; font-variant-numeric:tabular-nums; color:var(--ink)}
+.ocell span{display:block; font-size:9.5px; color:var(--ink-3); letter-spacing:.06em; line-height:1.2}
+.ocell .up{color:var(--cinnabar); font-size:7.5px; vertical-align:2px}
+.ocell .dn{color:var(--jade); font-size:7.5px; vertical-align:2px}
+.oline{font-size:10px; color:var(--gold); letter-spacing:.04em; margin-left:2px}
+.more-wrap{position:relative; z-index:1; text-align:center; margin-top:12px}
+
+/* 骨架 */
+.skel{height:74px; border-radius:2px; background:linear-gradient(100deg,rgba(255,255,255,.5) 20%,rgba(181,137,74,.14) 40%,rgba(255,255,255,.5) 60%);
+  background-size:220% 100%; animation:shine 1.5s infinite linear}
+@keyframes shine{0%{background-position:120% 0}100%{background-position:-40% 0}}
+
+/* ==================== 表单 ==================== */
+.field-grid{position:relative; z-index:1; display:grid; grid-template-columns:repeat(2,1fr); gap:16px 20px; margin-top:18px}
+.field{display:flex; flex-direction:column; gap:7px; position:relative; z-index:1}
+.field-label{font-size:12px; color:var(--ink-3); letter-spacing:.16em}
+.field input[type=text],.field input[type=date],.field input[type=time],.field input[type=datetime-local],.field select{
+  font-family:var(--kai); font-size:15px; color:var(--ink); background:rgba(255,255,255,.62);
+  border:1px solid rgba(35,30,25,.16); border-radius:2px; padding:9px 12px; width:100%;
+  transition:.2s; letter-spacing:.06em; appearance:none;
+}
+.field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23857767' stroke-width='1.2'/%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:right 12px center; padding-right:32px}
+.field input:focus,.field select:focus{outline:none; border-color:var(--gold); background:rgba(255,255,255,.95);
+  box-shadow:0 0 0 3px rgba(181,137,74,.14)}
+.field input::placeholder{color:rgba(133,119,103,.7); font-family:var(--serif); font-size:13px}
+.field-help{font-size:10.5px; line-height:1.5; color:var(--ink-3); letter-spacing:.03em}
+
+.seg{display:flex; border:1px solid rgba(35,30,25,.16); border-radius:2px; overflow:hidden; background:rgba(255,255,255,.5)}
+.seg button{
+  flex:1; font-family:var(--serif); font-size:13px; letter-spacing:.08em; padding:9px 6px; cursor:pointer;
+  border:0; background:transparent; color:var(--ink-3); transition:.2s;
+}
+.seg button+button{border-left:1px solid rgba(35,30,25,.10)}
+.seg button.on{background:linear-gradient(160deg,#B0332C,#8E211C); color:#FCF4E5}
+#fWhen{margin-top:8px}
+
+.parlay{position:relative; z-index:1; display:grid; grid-template-columns:repeat(6,1fr); gap:8px; margin-top:8px}
+.pbtn{
+  font-family:var(--kai); cursor:pointer; padding:12px 4px; font-size:15px; letter-spacing:.02em;
+  border:1px solid rgba(35,30,25,.16); border-radius:2px; background:rgba(255,255,255,.55);
+  color:var(--ink-2); transition:.2s; position:relative;
+}
+.pbtn:hover:not(:disabled){border-color:var(--gold); background:rgba(181,137,74,.10); color:var(--ink)}
+.pbtn.on{
+  background:linear-gradient(160deg,#FBEEDA,#F2DFC0); border-color:var(--cinnabar); color:var(--cinnabar);
+  box-shadow:inset 0 0 0 1px rgba(161,43,38,.22), 0 10px 20px -16px rgba(161,43,38,.85);
+  font-weight:600;
+}
+.pbtn:disabled{opacity:.32; cursor:not-allowed}
+.pbtn i{display:block; font-style:normal; font-size:10px; color:var(--ink-3); font-family:var(--serif); letter-spacing:.04em; margin-top:2px}
+.manual{position:relative; z-index:1; margin-top:18px; border-top:1px dotted rgba(181,137,74,.4)}
+.manual summary{
+  cursor:pointer; list-style:none; padding:10px 0 0; font-size:11.5px; letter-spacing:.2em; color:var(--ink-3);
+  display:flex; align-items:center; gap:8px;
+}
+.manual summary::-webkit-details-marker{display:none}
+.manual summary::before{content:'＋'; color:var(--gold); font-size:11px}
+.manual[open] summary::before{content:'－'}
+.manual-body{padding:10px 0 2px; display:grid; gap:5px}
+.manual-body p{margin:0; font-size:12px; line-height:1.85; color:var(--ink-3); letter-spacing:.02em}
+.manual-body b{color:var(--ink-2); font-weight:normal; font-family:var(--kai); font-size:12.5px;
+  display:inline-block; min-width:3.6em}
+.actions{position:relative; z-index:1; display:flex; gap:12px; align-items:center; margin-top:22px; flex-wrap:wrap}
+.actions .tip{font-size:11.5px; color:var(--ink-3); letter-spacing:.04em; margin-left:auto}
+
+/* ==================== 结果 ==================== */
+.result-top{
+  position:relative; z-index:1; display:flex; align-items:center; gap:26px; flex-wrap:wrap;
+  padding:6px 2px 20px; border-bottom:1px dashed rgba(181,137,74,.4); margin-bottom:18px;
+}
+.model-badge{
+  position:relative; z-index:1; margin-left:2px; padding:2px 8px; border:1px solid rgba(161,43,38,.22);
+  color:var(--cinnabar); background:rgba(161,43,38,.045); border-radius:2px;
+  font-size:10px; letter-spacing:.12em; white-space:nowrap;
+}
+.seal-score{position:relative; width:112px; height:112px; flex:0 0 112px}
+.seal-score svg{width:100%; height:100%; display:block}
+.seal-score #ringFg{transition:stroke-dashoffset 1.1s cubic-bezier(.2,.8,.2,1)}
+.seal-txt{position:absolute; inset:0; display:grid; place-content:center; text-align:center; gap:2px}
+.seal-txt b{font-family:var(--kai); font-size:34px; line-height:1; color:var(--cinnabar); letter-spacing:0;
+  font-variant-numeric:tabular-nums}
+.seal-txt span{font-size:9.5px; letter-spacing:.24em; color:var(--ink-3); text-indent:.24em}
+.hex-block{flex:1; min-width:210px}
+.hex-name{font-family:var(--kai); font-size:27px; letter-spacing:.16em; color:var(--ink); line-height:1.3}
+.hex-name .gua{color:var(--cinnabar)}
+.hex-sub{font-size:12px; color:var(--ink-3); letter-spacing:.1em; margin-top:6px}
+.combo-meta{display:flex; gap:22px; flex-wrap:wrap; font-size:12.5px; color:var(--ink-2)}
+.combo-meta div{display:flex; flex-direction:column; gap:3px}
+.combo-meta b{font-family:var(--kai); font-size:18px; color:var(--cinnabar); letter-spacing:.04em; font-variant-numeric:tabular-nums}
+.combo-meta span{font-size:10.5px; color:var(--ink-3); letter-spacing:.14em}
+
+.reading-grid{
+  position:relative; z-index:1; display:grid; grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:9px; margin:0 0 18px;
+}
+.reading-card{
+  min-width:0; padding:12px 13px; border:1px solid rgba(181,137,74,.24);
+  background:linear-gradient(150deg,rgba(255,255,255,.62),rgba(181,137,74,.045));
+}
+.reading-card > span{display:block; font-size:10px; color:var(--gold); letter-spacing:.22em}
+.reading-card > b{
+  display:block; margin-top:4px; font-family:var(--kai); font-size:14px; line-height:1.55;
+  font-weight:600; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.reading-card > p{margin:3px 0 0; font-size:10.5px; line-height:1.65; color:var(--ink-3); letter-spacing:.02em}
+
+.combo-list{position:relative; z-index:1; display:grid; gap:9px}
+.pick{
+  display:grid; grid-template-columns:34px 1fr auto; gap:12px; align-items:center;
+  padding:12px 14px; border:1px solid rgba(35,30,25,.10); background:rgba(255,255,255,.55);
+  border-radius:2px; transition:.2s;
+}
+.pick:hover{background:rgba(255,255,255,.85); border-color:rgba(181,137,74,.4)}
+.pidx{
+  width:28px;height:28px; display:grid; place-items:center; font-family:var(--kai); font-size:14px;
+  color:var(--cinnabar); border:1px solid rgba(161,43,38,.45); border-radius:50%;
+  background:rgba(161,43,38,.06); box-shadow:0 0 0 3px rgba(161,43,38,.04);
+}
+.pmain{min-width:0}
+.ptop{display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:3px}
+.pteams{font-family:var(--kai); font-size:15.5px; letter-spacing:.02em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.pteams em{font-style:normal; font-size:11px; color:var(--ink-3); padding:0 6px}
+.pnote{font-size:11.5px; color:var(--ink-3); letter-spacing:.02em; line-height:1.55; margin-top:3px;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden}
+.psel{display:flex; align-items:center; gap:8px; flex-wrap:nowrap}
+.psel > *{flex:0 0 auto}
+.chip-pool{font-size:10px; letter-spacing:.02em; color:var(--gold); border:1px solid var(--gold-3);
+  background:rgba(181,137,74,.06); padding:2px 8px; border-radius:2px; white-space:nowrap; line-height:1.5}
+.chip-sel{font-family:var(--kai); font-size:15px; color:#FCF4E5; background:linear-gradient(160deg,#B0332C,#8B201B);
+  padding:3px 12px; border-radius:2px; letter-spacing:.08em; box-shadow:0 6px 14px -12px rgba(161,43,38,.9)}
+.chip-odd{font-family:var(--kai); font-size:15px; color:var(--ink); font-variant-numeric:tabular-nums; min-width:42px; text-align:right}
+.chip-score{font-size:10px; color:var(--ink-3); text-align:right; min-width:32px}
+
+.summary{
+  position:relative; z-index:1; margin-top:18px; padding:16px 18px; background:rgba(181,137,74,.065);
+  border:1px solid rgba(181,137,74,.24); border-radius:2px; font-size:13.5px; line-height:1.95;
+  color:var(--ink-2); letter-spacing:.02em;
+}
+.summary .st{display:block; font-family:var(--kai); font-size:13px; color:var(--cinnabar); letter-spacing:.2em; margin-bottom:6px}
+
+.weights{position:relative; z-index:1; margin-top:18px}
+.wtitle{font-size:11.5px; letter-spacing:.2em; color:var(--ink-3); margin-bottom:10px}
+.wrow{display:grid; grid-template-columns:76px 1fr 40px; gap:10px; align-items:center; margin-bottom:7px; font-size:12px}
+.wrow .wn{color:var(--ink-2); letter-spacing:.08em}
+.wbar{height:7px; background:rgba(35,30,25,.07); border-radius:999px; overflow:hidden}
+.wbar i{display:block; height:100%; border-radius:999px; background:linear-gradient(90deg,var(--gold-2),var(--cinnabar));
+  transition:width .9s cubic-bezier(.2,.8,.2,1)}
+.wrow .wv{text-align:right; color:var(--gold); font-variant-numeric:tabular-nums; font-size:11.5px}
+.wnote{font-size:11px; color:var(--ink-3); letter-spacing:.03em; line-height:1.7; margin-top:8px;
+  padding-top:8px; border-top:1px dotted rgba(181,137,74,.35)}
+
+.foot{position:relative; z-index:1; margin-top:34px; text-align:center; font-size:11.5px; color:var(--ink-3);
+  letter-spacing:.06em; line-height:1.9}
+.foot .rule{display:flex; align-items:center; gap:12px; justify-content:center; margin-bottom:14px; color:var(--gold)}
+.foot .rule::before,.foot .rule::after{content:''; width:70px; height:1px; background:linear-gradient(90deg,transparent,var(--gold-3))}
+.foot .rule::after{background:linear-gradient(90deg,var(--gold-3),transparent)}
+.foot b{color:var(--cinnabar); font-weight:normal}
+
+/* ==================== 吐司 ==================== */
+.toast{
+  position:fixed; left:50%; bottom:calc(24px + env(safe-area-inset-bottom)); transform:translate(-50%,16px); z-index:99;
+  background:rgba(35,30,25,.92); color:#F7EFE0; font-size:13px; letter-spacing:.06em;
+  padding:10px 20px; border-radius:2px; opacity:0; pointer-events:none; transition:.28s;
+  border:1px solid rgba(181,137,74,.5); max-width:88vw; text-align:center;
+}
+.toast.on{opacity:1; transform:translate(-50%,0)}
+
+/* iOS 原生容器 */
+.native-app body{background-attachment:scroll;overscroll-behavior-y:none}
+.native-app .wrap{
+  padding-top:env(safe-area-inset-top);
+  padding-bottom:calc(42px + env(safe-area-inset-bottom));
+}
+.native-app .hero{padding-top:34px}
+.native-app .grain{opacity:.38}
+.native-app .toast{bottom:calc(18px + env(safe-area-inset-bottom))}
+
+/* ==================== 推演仪轨 ==================== */
+.ritual-overlay{
+  position:fixed; inset:0; z-index:80; display:grid; place-items:center; padding:24px;
+  background:
+    radial-gradient(520px 360px at 50% 45%,rgba(255,250,239,.97),rgba(247,240,227,.90) 68%,rgba(239,228,207,.94)),
+    rgba(35,30,25,.18);
+  backdrop-filter:blur(8px);
+}
+.ritual-overlay[hidden]{display:none}
+body.ritual-open{overflow:hidden}
+.ritual-panel{
+  position:relative; width:min(440px,100%); padding:34px 30px 24px; text-align:center;
+  background:linear-gradient(176deg,#FFFDF7,#F8EFDD); border:1px solid rgba(181,137,74,.58);
+  box-shadow:0 32px 90px -42px rgba(35,30,25,.9),inset 0 0 0 6px rgba(255,255,255,.42);
+}
+.ritual-panel::before{
+  content:''; position:absolute; inset:8px; pointer-events:none;
+  border:1px solid rgba(181,137,74,.24);
+}
+.ritual-orbit{position:relative; width:104px; height:104px; margin:0 auto 18px; display:grid; place-items:center}
+.ritual-ring{position:absolute; border-radius:50%; border:1px solid rgba(181,137,74,.42)}
+.ritual-ring-a{inset:0; border-style:dashed; animation:ritualSpin 12s linear infinite}
+.ritual-ring-b{inset:10px; border-color:rgba(161,43,38,.24); animation:ritualSpin 9s linear infinite reverse}
+.ritual-ring-a::before,.ritual-ring-a::after{
+  content:''; position:absolute; left:50%; width:5px; height:5px; border-radius:50%;
+  background:var(--gold); transform:translateX(-50%);
+}
+.ritual-ring-a::before{top:-3px}.ritual-ring-a::after{bottom:-3px}
+.ritual-seal{
+  width:58px; height:58px; display:grid; place-items:center; border-radius:3px;
+  color:#FBF3E4; background:linear-gradient(150deg,#B0332C,#8A1F1A); font-family:var(--kai); font-size:31px;
+  box-shadow:0 12px 28px -16px rgba(161,43,38,.95);
+  animation:ritualSeal 2.4s ease-in-out infinite;
+}
+.ritual-kicker{font-size:10px; letter-spacing:.34em; text-indent:.34em; color:var(--gold)}
+.ritual-panel h2{
+  margin:7px 0 0; font-family:var(--kai); font-size:25px; font-weight:600;
+  letter-spacing:.22em; text-indent:.22em; color:var(--ink);
+}
+.ritual-detail{
+  min-height:3.2em; margin:10px auto 18px; max-width:320px; color:var(--ink-2);
+  font-size:12.5px; line-height:1.65; letter-spacing:.05em;
+}
+.ritual-stages{display:grid; grid-template-columns:repeat(3,1fr); gap:7px; margin:0 auto 16px}
+.ritual-stage{
+  padding:7px 3px; border:1px solid rgba(35,30,25,.09); color:var(--ink-3);
+  font-size:10.5px; letter-spacing:.08em; background:rgba(255,255,255,.38); transition:.35s;
+}
+.ritual-stage.done{color:var(--jade); border-color:rgba(67,101,91,.22); background:rgba(67,101,91,.055)}
+.ritual-stage.on{
+  color:var(--cinnabar); border-color:rgba(161,43,38,.48); background:rgba(161,43,38,.07);
+  box-shadow:inset 0 -2px 0 var(--cinnabar);
+}
+.ritual-progress{height:3px; overflow:hidden; background:rgba(35,30,25,.08)}
+.ritual-progress i{
+  display:block; width:0; height:100%; background:linear-gradient(90deg,var(--gold-2),var(--cinnabar));
+  transition:width .55s cubic-bezier(.2,.8,.2,1);
+}
+.ritual-foot{
+  display:flex; justify-content:space-between; margin-top:9px; color:var(--ink-3);
+  font-size:9.5px; letter-spacing:.16em;
+}
+@keyframes ritualSpin{to{transform:rotate(360deg)}}
+@keyframes ritualSeal{0%,100%{transform:rotate(-2deg) scale(1)}50%{transform:rotate(1deg) scale(1.035)}}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important}
+  .btn,.dtab,.mrow,.seg button,.pbtn,.pick,.seal-score #ringFg,.wbar i,.toast{transition:none!important}
+}
+
+/* ==================== 响应式 ==================== */
+@media (max-width:900px){
+  .hero-v{display:none}
+  .mrow{grid-template-columns:1fr}
+  .odds-wrap{justify-content:flex-start}
+  .field-grid{grid-template-columns:1fr}
+  .result-top{gap:18px}
+  .seal-score{width:96px;height:96px;flex-basis:96px}
+  .seal-txt b{font-size:29px}
+}
+@media (max-width:620px){
+  body{font-size:14px}
+  .wrap{padding:0 12px 48px}
+  .hero{padding:34px 0 20px}
+  .hero h1{letter-spacing:.22em; text-indent:.22em}
+  .hero .sub{letter-spacing:.2em; text-indent:.2em; font-size:11.5px}
+  .card{padding:18px 14px 20px; margin-top:18px}
+  .card::after{background-size:14px 14px}
+  .field input[type=text],.field input[type=date],.field input[type=time],.field input[type=datetime-local],.field select{font-size:16px}
+  .sec-head h2{font-size:16.5px}
+  .model-badge{order:3; margin-left:40px}
+  .mteams{font-size:15px}
+  .ocell{min-width:44px}
+  .ocell b{font-size:12.5px}
+  .parlay{grid-template-columns:repeat(3,1fr)}
+  .pick{grid-template-columns:26px 1fr; gap:8px 10px}
+  .pick .psel{grid-column:2; justify-content:flex-start; margin-top:2px}
+  .pidx{width:24px;height:24px;font-size:12.5px}
+  .actions{flex-direction:column; align-items:stretch}
+  .actions .tip{margin:0; text-align:center}
+  .combo-meta{gap:16px}
+  .reading-grid{grid-template-columns:1fr; gap:7px}
+  .reading-card{display:grid; grid-template-columns:42px minmax(0,1fr); column-gap:8px; padding:10px 12px}
+  .reading-card > span{grid-row:1 / span 2; align-self:center; letter-spacing:.12em}
+  .reading-card > b{margin-top:0}
+  .wrow{grid-template-columns:64px 1fr 34px}
+  .hs-time{display:none}
+  .ritual-overlay{padding:14px}
+  .ritual-panel{padding:28px 18px 20px}
+  .ritual-stages{grid-template-columns:repeat(2,1fr)}
+  .ritual-detail{font-size:12px}
+}
+</style>
+</head>
+<body>
+<div class="grain"></div>
+
+<div class="wrap">
+
+  <header class="hero">
+    <div class="seal-logo">玄</div>
+    <h1>玄枢阁</h1>
+    <p class="sub">天机串关演算 · 竞彩足球</p>
+    <div class="hdate" id="heroDate">取象推演</div>
+    <div class="hero-v"><i>以数推象</i><i>　</i><i>以象定串</i></div>
+  </header>
+
+  <!-- 壹 · 观象 -->
+  <section class="card">
+    <div class="sec-head">
+      <span class="sec-idx">壹</span>
+      <h2>观象 · 今日赛事</h2>
+      <span class="sec-hint">胜平负 / 让球胜平负</span>
+      <div class="sec-tools">
+        <span class="pill" id="dataState" role="status" aria-live="polite"><i class="dot" aria-hidden="true"></i>载入中</span>
+        <button class="btn" id="btnRefresh" type="button" aria-controls="matchList">刷新数据</button>
+      </div>
+    </div>
+    <div class="date-tabs" id="dateTabs" aria-label="选择比赛日"></div>
+    <div class="notice" id="matchNotice" role="status" aria-live="polite" hidden></div>
+    <div class="match-list" id="matchList"></div>
+    <div class="more-wrap" id="moreWrap" hidden>
+      <button class="btn" id="btnMore" type="button" aria-controls="matchList" aria-expanded="false">展开全部赛事</button>
+    </div>
+  </section>
+
+  <!-- 贰 · 参详 -->
+  <section class="card">
+    <div class="sec-head">
+      <span class="sec-idx">贰</span>
+      <h2>参详 · 命理取数</h2>
+      <span class="sec-hint">姓名 · 生辰 · 生肖 · 时辰</span>
+    </div>
+
+    <div class="field-grid">
+      <label class="field">
+        <span class="field-label">姓　名</span>
+        <input id="fName" type="text" maxlength="12" placeholder="填入姓名，取字画之数" autocomplete="off" spellcheck="false">
+      </label>
+      <label class="field">
+        <span class="field-label">出生日期</span>
+        <input id="fBirth" type="date" min="1930-01-01" max="2026-12-31">
+      </label>
+      <label class="field">
+        <span class="field-label">出生时刻 · 可选</span>
+        <input id="fBirthTime" type="time" aria-describedby="birthTimeHint">
+        <small class="field-help" id="birthTimeHint">留空则只取年月日柱，不臆测时柱。</small>
+      </label>
+      <label class="field">
+        <span class="field-label">生　肖</span>
+        <select id="fZodiac"></select>
+      </label>
+      <div class="field" role="group" aria-label="预测时间">
+        <span class="field-label">预测时间</span>
+        <div class="seg" id="timeSeg">
+          <button type="button" data-mode="now" class="on" aria-pressed="true">此刻起卦</button>
+          <button type="button" data-mode="custom" aria-pressed="false">自定时刻</button>
+        </div>
+        <input id="fWhen" type="datetime-local" hidden>
+      </div>
+    </div>
+
+    <div class="field" style="margin-top:20px">
+      <span class="field-label">串关之数</span>
+      <div class="parlay" id="parlayGroup"></div>
+    </div>
+
+    <div class="notice soft" id="parlayHint" hidden></div>
+
+    <div class="actions">
+      <button class="btn primary" id="btnGo" type="button" aria-controls="cardResult">起卦推演</button>
+      <button class="btn" id="btnAgain" type="button" hidden>再换一卦</button>
+      <span class="tip">推演仅取生辰、卦象与赔率数字之象，不涉球队实力、战绩与伤停。</span>
+    </div>
+    <details class="manual">
+      <summary>推演口径</summary>
+      <div class="manual-body">
+        <p><b>历法</b>：按中国农历取月建、日数与时支，起课不再直接套用公历月日。</p>
+        <p><b>命造</b>：由生辰推年月日柱；出生时刻可选，留空只取三柱，日干五行作为日主。</p>
+        <p><b>姓名</b>：区分常见复姓，拆天、人、地、外、总五格，以三才五行作为命格辅证。</p>
+        <p><b>字库</b>：姓名库未收录的冷僻字会以固定规则折算近似笔画，并在签文中明确标记。</p>
+        <p><b>起卦</b>：年支、农历月日与时支起梅花时课，同时取本卦、互卦、变卦。</p>
+        <p><b>体用</b>：动爻所在为用，另一卦为体；体用生克决定主客方向与变爻强弱。</p>
+        <p><b>场次</b>：队名上下卦、场次时支、日主、时课体用、赔率河洛数共同参与评分。</p>
+        <p><b>成串</b>：五层分项评分后，以时课之数为种匹配组合，并校验联赛与日期离散。</p>
+        <p><b>口径</b>：模型追求规则完整与结果可复现，不表示具备预测比赛结果的能力。</p>
+      </div>
+    </details>
+
+    <div class="notice" id="formNotice" role="alert" hidden></div>
+  </section>
+
+  <!-- 叁 · 推演 -->
+  <section class="card" id="cardResult" tabindex="-1" aria-labelledby="resultTitle" hidden>
+    <div class="sec-head">
+      <span class="sec-idx">叁</span>
+      <h2 id="resultTitle">推演 · 天机签</h2>
+      <span class="model-badge">三重取象 · v2</span>
+      <div class="sec-tools">
+        <button class="btn" id="btnCopy" type="button">复制此卦</button>
+      </div>
+    </div>
+
+    <div class="result-top">
+      <div class="seal-score">
+        <svg viewBox="0 0 120 120" aria-hidden="true">
+          <defs>
+            <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#D2A868"/><stop offset=".55" stop-color="#B5894A"/><stop offset="1" stop-color="#A12B26"/>
+            </linearGradient>
+          </defs>
+          <circle cx="60" cy="60" r="52" fill="none" stroke="rgba(35,30,25,.10)" stroke-width="7"/>
+          <circle id="ringFg" cx="60" cy="60" r="52" fill="none" stroke="url(#ringGrad)" stroke-width="7"
+                  stroke-linecap="round" transform="rotate(-90 60 60)"
+                  stroke-dasharray="326.73" stroke-dashoffset="326.73"/>
+        </svg>
+        <div class="seal-txt"><b id="scoreNum">--</b><span>玄学评分</span></div>
+      </div>
+
+      <div class="hex-block">
+        <div class="hex-name" id="hexName">—</div>
+        <div class="hex-sub" id="hexSub">—</div>
+      </div>
+
+      <div class="combo-meta">
+        <div><b id="mParlay">—</b><span>串关方式</span></div>
+        <div><b id="mOdds">—</b><span>合　赔</span></div>
+        <div><b id="mTime">—</b><span>起卦时刻</span></div>
+      </div>
+    </div>
+
+    <div class="reading-grid">
+      <article class="reading-card">
+        <span>月建</span>
+        <b id="readingLunar">—</b>
+        <p id="readingPillars">—</p>
+      </article>
+      <article class="reading-card">
+        <span>命格</span>
+        <b id="readingName">—</b>
+        <p id="readingNameDetail">—</p>
+      </article>
+      <article class="reading-card">
+        <span>卦令</span>
+        <b id="readingHex">—</b>
+        <p id="readingHexDetail">—</p>
+      </article>
+    </div>
+
+    <div class="combo-list" id="comboList"></div>
+
+    <div class="summary" id="summaryBox"></div>
+
+    <div class="weights">
+      <div class="wtitle">权 重 推 演 台</div>
+      <div id="weightRows"></div>
+      <div class="wnote">五层校验：命格日主 26% · 时课体用 24% · 动爻场气 18% · 河洛数字 20% · 月建时气 12%。组合再校验五行相生、地支冲合与联赛离散。</div>
+    </div>
+
+    <div class="notice soft" style="margin-top:18px">
+      本卦由农历月建、三柱日主、姓名五格、本互变卦、体用生克与赔率数字综合取象，仅供玄学娱乐，不构成任何投注建议。
+    </div>
+  </section>
+
+  <footer class="foot">
+    <div class="rule">◈</div>
+    <div>玄枢阁 · 天机串关演算　　数据来源：中国体育彩票竞彩足球官方数据</div>
+    <div>玄学取象，纯为怡情　<b>理性娱乐，切勿沉迷</b>　未满十八岁请勿参与任何彩票投注</div>
+  </footer>
+</div>
+
+<div class="ritual-overlay" id="ritualOverlay" hidden>
+  <div class="ritual-panel" id="ritualPanel" role="dialog" aria-modal="true" aria-labelledby="ritualTitle" tabindex="-1">
+    <div class="ritual-orbit" aria-hidden="true">
+      <div class="ritual-ring ritual-ring-a"></div>
+      <div class="ritual-ring ritual-ring-b"></div>
+      <div class="ritual-seal">玄</div>
+    </div>
+    <div class="ritual-kicker">玄枢阁 · 时课演算</div>
+    <h2 id="ritualTitle">净心定盘</h2>
+    <p class="ritual-detail" id="ritualDetail" aria-live="polite" aria-atomic="true">收摄杂念，候其气定。</p>
+    <div class="ritual-stages" id="ritualStages" aria-hidden="true"></div>
+    <div class="ritual-progress" role="progressbar" id="ritualProgress" aria-label="推演进度"
+         aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="ritualProgressBar"></i></div>
+    <div class="ritual-foot"><span id="ritualCount">一候</span><span>请静候卦成</span></div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<noscript><div style="text-align:center;padding:40px;font-size:14px">需启用 JavaScript 方可起卦推演。</div></noscript>
+
+<script>
+(function(){
+'use strict';
+
+/* ==================================================================
+   一、常数与工具（纯函数区，至「渲染层」为止不触碰 DOM）
+   ================================================================== */
+var API = 'https://webapi.sporttery.cn/gateway/jc/football/getMatchCalculatorV1.qry?poolCode=hhad,had&channel=c';
+var RELAY_SAME = 'api/matches';                      /* 本地中转（与本页同源） */
+var RELAY_LOCAL = 'http://127.0.0.1:8899/api/matches'; /* 本地中转（默认端口） */
+var NATIVE_BRIDGE = !!(window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.xuanshuNative);
+if (NATIVE_BRIDGE) document.documentElement.classList.add('native-app');
+
+var GAN = '甲乙丙丁戊己庚辛壬癸'.split('');
+var ZHI = '子丑寅卯辰巳午未申酉戌亥'.split('');
+var SX  = '鼠牛虎兔龙蛇马羊猴鸡狗猪'.split('');
+var ZHI_WX = ['水','土','木','木','土','火','火','土','金','金','土','水'];
+var SX_YANG = [1,0,1,0,1,0,1,0,1,0,1,0];
+var WX_SHENG = {'木':'火','火':'土','土':'金','金':'水','水':'木'};
+var WX_KE    = {'木':'土','土':'水','水':'火','火':'金','金':'木'};
+var GAN_WX   = ['木','木','火','火','土','土','金','金','水','水'];
+var NUM_WX   = {1:'水',2:'火',3:'木',4:'金',5:'土',6:'水',7:'火',8:'木',9:'金',0:'土'};
+var LIUHE    = {0:1,1:0,2:11,11:2,3:10,10:3,4:9,9:4,5:8,8:5,6:7,7:6};
+var LIUHAI   = {0:7,7:0,1:6,6:1,2:5,5:2,3:4,4:3,8:11,11:8,9:10,10:9};
+var SANHE    = [[8,0,4],[11,3,7],[2,6,10],[5,9,1]];
+var BG       = ['乾','兑','离','震','巽','坎','艮','坤'];
+var BG_WX    = ['金','金','火','木','木','水','土','土'];
+var BG_XIANG = ['天','泽','火','雷','风','水','山','地'];
+var CN_NUM   = ['零','一','二','三','四','五','六','七','八','九','十'];
+var TRIGRAM_LINES = ['111','110','101','100','011','010','001','000'];
+var LUNAR_MONTH_NUM = {
+  '正月':1,'一月':1,'二月':2,'三月':3,'四月':4,'五月':5,'六月':6,
+  '七月':7,'八月':8,'九月':9,'十月':10,'冬月':11,'十一月':11,'腊月':12,'十二月':12
+};
+var COMPOUND_SURNAMES = {
+  '欧阳':1,'上官':1,'司马':1,'诸葛':1,'皇甫':1,'尉迟':1,'公孙':1,'令狐':1,'慕容':1,'东方':1,
+  '西门':1,'南宫':1,'夏侯':1,'独孤':1,'长孙':1,'宇文':1,'轩辕':1,'端木':1,'司徒':1,'司空':1,
+  '闻人':1,'赫连':1,'澹台':1,'濮阳':1,'公冶':1,'宗政':1,'太史':1,'申屠':1,'呼延':1,'百里':1,
+  '钟离':1,'拓跋':1,'鲜于':1,'闾丘':1,'左丘':1,'东郭':1,'南门':1,'第五':1
+};
+
+var HEX_TABLE = [
+  ['乾为天','天泽履','天火同人','天雷无妄','天风姤','天水讼','天山遁','天地否'],
+  ['泽天夬','兑为泽','泽火革','泽雷随','泽风大过','泽水困','泽山咸','泽地萃'],
+  ['火天大有','火泽睽','离为火','火雷噬嗑','火风鼎','火水未济','火山旅','火地晋'],
+  ['雷天大壮','雷泽归妹','雷火丰','震为雷','雷风恒','雷水解','雷山小过','雷地豫'],
+  ['风天小畜','风泽中孚','风火家人','风雷益','巽为风','风水涣','风山渐','风地观'],
+  ['水天需','水泽节','水火既济','水雷屯','水风井','坎为水','水山蹇','水地比'],
+  ['山天大畜','山泽损','山火贲','山雷颐','山风蛊','山水蒙','艮为山','山地剥'],
+  ['地天泰','地泽临','地火明夷','地雷复','地风升','地水师','地山谦','坤为地']
+];
+
+/* 常用汉字简体笔画（用于字画取数；未收录者以字形位数推演） */
+var STROKE = {
+'李':7,'王':4,'张':7,'刘':6,'陈':7,'杨':7,'黄':11,'赵':9,'吴':7,'周':8,'徐':10,'孙':6,'马':3,'朱':6,'胡':9,
+'郭':10,'何':7,'高':10,'林':8,'罗':8,'郑':8,'梁':11,'谢':12,'宋':7,'唐':10,'许':6,'韩':12,'冯':5,'邓':4,'曹':11,
+'彭':12,'曾':12,'肖':7,'田':5,'董':12,'袁':10,'潘':15,'蒋':12,'蔡':14,'余':7,'杜':7,'叶':5,'程':12,'苏':7,'魏':17,
+'吕':6,'丁':2,'任':6,'沈':7,'姚':9,'卢':5,'姜':9,'崔':11,'钟':9,'谭':14,'陆':7,'汪':7,'范':8,'金':8,'石':5,'廖':14,
+'贾':10,'夏':10,'韦':4,'付':5,'方':4,'白':5,'邹':7,'孟':8,'熊':14,'秦':10,'邱':7,'江':6,'尹':4,'薛':16,'闫':6,'段':9,
+'雷':13,'侯':9,'龙':5,'史':5,'陶':10,'黎':15,'贺':9,'顾':10,'毛':4,'郝':9,'龚':11,'邵':7,'万':3,'钱':10,'严':7,'覃':12,
+'武':8,'戴':17,'莫':10,'孔':4,'向':6,'汤':6,'常':11,'温':12,'康':11,'施':9,'文':4,'于':3,'傅':12,'萧':11,'阎':11,'易':8,
+'乔':6,'伍':6,'庞':8,'颜':15,'倪':10,'庄':6,'聂':10,'章':11,'鲁':12,'岳':8,'翟':14,'殷':10,'詹':13,'申':5,'欧':8,'耿':10,
+'关':6,'兰':5,'焦':12,'俞':9,'左':5,'柳':9,'甘':5,'祝':9,'包':5,'宁':5,'尚':8,'符':11,'舒':12,'阮':6,'柯':9,'纪':6,'梅':11,
+'童':12,'凌':10,'毕':6,'单':8,'季':8,'裴':14,'霍':16,'涂':10,'成':6,'苗':8,'谷':7,'盛':11,'曲':6,'翁':10,'冉':5,'骆':9,
+'蓝':13,'路':13,'游':12,'辛':7,'靳':13,'管':14,'柴':10,'蒙':13,'鲍':13,'喻':12,'祁':6,'蒲':13,'房':8,'滕':14,
+'屈':8,'饶':9,'解':13,'牟':6,'艾':5,'尤':4,'阳':6,'时':7,'穆':16,'农':6,'司':5,'卓':8,'古':5,'吉':6,'缪':14,'简':13,'车':4,
+'项':9,'连':7,'芦':7,'麦':7,'褚':13,'娄':9,'窦':13,'戚':11,'岑':7,'景':12,'党':10,'宫':9,'费':9,'卜':2,'冷':7,'晏':10,'席':10,
+'卫':3,'米':6,'柏':9,'宗':8,'瞿':18,'桂':10,'全':6,'佟':7,'应':7,'臧':14,'闵':12,'苟':8,'邬':6,'边':5,'卞':4,'姬':10,'师':6,
+'和':8,'仇':4,'栾':9,'隋':11,'商':11,'刁':2,'沙':7,'荣':9,'巫':7,'寇':11,'桑':10,'郎':8,'甄':13,'丛':5,'仲':6,'虞':13,'敖':10,
+'巩':6,'明':8,'佘':7,'池':6,'查':9,'麻':11,'苑':8,'迟':7,'邝':5,'官':8,'封':9,'谈':10,'匡':6,'惠':12,'荆':9,'乐':5,'冀':16,
+'郁':8,'胥':9,'南':9,'班':10,'储':12,'原':10,'栗':10,'燕':16,'楚':13,'劳':7,'谌':11,'奚':10,'皮':5,'粟':12,'冼':8,'蔺':14,
+'楼':13,'国':8,'伟':6,'芳':7,'娜':9,'敏':11,'静':14,'丽':7,'强':12,'磊':15,'军':6,'洋':9,'勇':9,'艳':10,'杰':8,'娟':10,
+'涛':10,'明':8,'超':12,'秀':7,'霞':17,'平':5,'刚':6,'英':8,'华':6,'建':8,'红':6,'玉':5,'凤':4,'菊':11,'兰':5,'萍':11,
+'鹏':13,'辉':12,'鑫':24,'晓':10,'雪':11,'佳':8,'欣':8,'浩':10,'雨':8,'思':9,'子':3,'浩':10,'宁':5,'远':7,'航':10,'博':12,
+'宇':6,'轩':7,'然':12,'天':4,'昊':8,'嘉':14,'泽':8,'睿':14,'铭':11,'晨':11,'阳':6,'旭':6,'峰':10,'岩':8,'松':8,'竹':6,
+'梅':11,'荷':10,'莉':10,'蓉':13,'薇':16,'琪':12,'琳':12,'瑶':14,'珊':9,'瑾':15,'璇':15,'玥':8,'彤':7,'丹':4,'青':8,'蓝':13
+};
+
+function strokeOf(ch){
+  if (STROKE[ch]) return STROKE[ch];
+  var cp = ch.codePointAt(0);
+  return (cp % 17) + 2;
+}
+function nameVal(s){
+  if (!s) return 13;
+  var t = 0;
+  for (var i = 0; i < s.length; i++) t += strokeOf(s[i]);
+  return t;
+}
+function dSum(n){
+  n = Math.abs(Math.round(n));
+  var s = 0;
+  while (n > 0){ s += n % 10; n = Math.floor(n / 10); }
+  return s;
+}
+function dRoot(n){
+  var s = dSum(n);
+  while (s > 9) s = dSum(s);
+  return s;
+}
+function oddsRoot(str){
+  var s = 0, t = String(str);
+  for (var i = 0; i < t.length; i++){
+    var c = t.charCodeAt(i);
+    if (c >= 48 && c <= 57) s += c - 48;
+  }
+  while (s > 9) s = dSum(s);
+  return s === 0 ? 9 : s;
+}
+function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
+function cnNum(n){ return n <= 10 ? CN_NUM[n] : String(n); }
+function cnNumber(n){
+  n = Math.abs(Math.round(n));
+  if (n <= 10) return CN_NUM[n];
+  if (n < 20) return '十' + CN_NUM[n - 10];
+  if (n % 10 === 0 && n < 100) return CN_NUM[Math.floor(n / 10)] + '十';
+  return n < 100 ? CN_NUM[Math.floor(n / 10)] + '十' + CN_NUM[n % 10] : String(n);
+}
+function hexName(up, down){
+  up = ((up - 1) % 8 + 8) % 8;
+  down = ((down - 1) % 8 + 8) % 8;
+  return HEX_TABLE[up][down];
+}
+function hhmm(t){
+  var s = String(t || '');
+  return s.length >= 5 ? s.slice(0, 5) : s;
+}
+function cleanText(value, fallback, maxLength){
+  var text = String(value === null || value === undefined ? '' : value).trim();
+  if (!text) text = fallback || '';
+  return text.slice(0, maxLength || 80);
+}
+function cleanOdd(value){
+  if (value === null || value === undefined || value === '') return null;
+  var number = Number(value);
+  if (!isFinite(number) || number <= 0 || number > 1000) return null;
+  return String(value).slice(0, 12);
+}
+function hashStr(s){
+  var h = 2166136261;
+  for (var i = 0; i < s.length; i++){ h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+  return h >>> 0;
+}
+function mulberry32(a){
+  return function(){
+    a |= 0; a = a + 0x6D2B79F5 | 0;
+    var t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+/* ---------- 命理：五行 / 生肖 关系 ---------- */
+function relWX(host, guest){
+  if (host === guest) return { v: 8, label: '同气' };
+  if (WX_SHENG[guest] === host) return { v: 10, label: '生我' };
+  if (WX_SHENG[host] === guest) return { v: 4,  label: '我生' };
+  if (WX_KE[host] === guest)    return { v: 3,  label: '我克' };
+  return { v: -11, label: '克我' };
+}
+function relZhi(a, b){
+  if (LIUHE[a] === b) return { v: 12, label: '六合' };
+  if (a === b) return { v: 4, label: '比和' };
+  if ((a + 6) % 12 === b) return { v: -14, label: '相冲' };
+  if (LIUHAI[a] === b) return { v: -8, label: '相害' };
+  for (var i = 0; i < SANHE.length; i++){
+    if (SANHE[i].indexOf(a) > -1 && SANHE[i].indexOf(b) > -1) return { v: 9, label: '三合' };
+  }
+  return { v: 0, label: '无涉' };
+}
+
+/* ---------- 起卦：梅花时课 ---------- */
+function qiGua(yearZhiNum, month, day, hourZhiNum){
+  var sum = yearZhiNum + month + day;
+  var up   = ((sum - 1) % 8 + 8) % 8 + 1;
+  var down = ((sum + hourZhiNum - 1) % 8 + 8) % 8 + 1;
+  var move = ((sum + hourZhiNum - 1) % 6 + 6) % 6 + 1;
+  return { up: up, down: down, move: move };
+}
+
+/* ---------- 历法：农历月建、干支与姓名五格 ---------- */
+var CHINESE_DATE_FORMAT = null;
+
+function parseLunarMonth(name){
+  var text = String(name || '').replace('闰', '');
+  if (LUNAR_MONTH_NUM[text]) return LUNAR_MONTH_NUM[text];
+  var digit = text.match(/\d+/);
+  return digit ? clamp(Number(digit[0]), 1, 12) : 1;
+}
+
+function lunarDateInfo(date){
+  try {
+    if (!CHINESE_DATE_FORMAT){
+      CHINESE_DATE_FORMAT = new Intl.DateTimeFormat('zh-CN-u-ca-chinese', {
+        year: 'numeric', month: 'long', day: 'numeric'
+      });
+    }
+    var parts = CHINESE_DATE_FORMAT.formatToParts(date);
+    var info = { relatedYear: date.getFullYear(), yearName: '', monthName: '', day: date.getDate(), leap: false };
+    for (var i = 0; i < parts.length; i++){
+      if (parts[i].type === 'relatedYear') info.relatedYear = Number(parts[i].value) || info.relatedYear;
+      if (parts[i].type === 'yearName') info.yearName = parts[i].value;
+      if (parts[i].type === 'month') info.monthName = parts[i].value;
+      if (parts[i].type === 'day') info.day = Number(parts[i].value) || info.day;
+    }
+    info.leap = String(info.monthName).indexOf('闰') > -1;
+    info.month = parseLunarMonth(info.monthName);
+    if (!info.yearName || info.yearName.length < 2){
+      var yearZhi = ((info.relatedYear - 4) % 12 + 12) % 12;
+      info.yearName = GAN[((info.relatedYear - 4) % 10 + 10) % 10] + ZHI[yearZhi];
+    }
+    info.dayText = cnNumber(info.day);
+    info.label = info.yearName + '年 ' + info.monthName + info.dayText + '日';
+    return info;
+  } catch (e) {
+    var fallbackZhi = ((date.getFullYear() - 4) % 12 + 12) % 12;
+    var fallbackGan = ((date.getFullYear() - 4) % 10 + 10) % 10;
+    return {
+      relatedYear: date.getFullYear(),
+      yearName: GAN[fallbackGan] + ZHI[fallbackZhi],
+      monthName: (date.getMonth() + 1) + '月',
+      month: date.getMonth() + 1,
+      day: date.getDate(),
+      dayText: cnNumber(date.getDate()),
+      leap: false,
+      label: (date.getMonth() + 1) + '月' + date.getDate() + '日'
+    };
+  }
+}
+
+function julianDayNumber(y, m, d){
+  var a = Math.floor((14 - m) / 12);
+  var yy = y + 4800 - a;
+  var mm = m + 12 * a - 3;
+  return d + Math.floor((153 * mm + 2) / 5) + 365 * yy +
+    Math.floor(yy / 4) - Math.floor(yy / 100) + Math.floor(yy / 400) - 32045;
+}
+
+function dayPillarInfo(date){
+  var index = ((julianDayNumber(date.getFullYear(), date.getMonth() + 1, date.getDate()) + 49) % 60 + 60) % 60;
+  return { index: index, stemIdx: index % 10, zhiIdx: index % 12, name: GAN[index % 10] + ZHI[index % 12] };
+}
+
+function pillarsFor(date, hour){
+  var lunar = lunarDateInfo(date);
+  var yearStemIdx = GAN.indexOf(lunar.yearName.charAt(0));
+  var yearZhiIdx = ZHI.indexOf(lunar.yearName.charAt(1));
+  if (yearStemIdx < 0) yearStemIdx = ((lunar.relatedYear - 4) % 10 + 10) % 10;
+  if (yearZhiIdx < 0) yearZhiIdx = ((lunar.relatedYear - 4) % 12 + 12) % 12;
+
+  var monthZhiIdx = (lunar.month + 1) % 12;
+  var monthStemIdx = ((yearStemIdx % 5) * 2 + 2 + lunar.month - 1) % 10;
+  var day = dayPillarInfo(date);
+  var hourZhiIdx = hour === null || hour === undefined ? null : Math.floor(((hour + 1) % 24) / 2) % 12;
+  var hourStemIdx = hourZhiIdx === null ? null : ((day.stemIdx % 5) * 2 + hourZhiIdx) % 10;
+
+  return {
+    lunar: lunar,
+    year: GAN[yearStemIdx] + ZHI[yearZhiIdx],
+    month: GAN[monthStemIdx] + ZHI[monthZhiIdx],
+    day: day.name,
+    hour: hourStemIdx === null ? '' : GAN[hourStemIdx] + ZHI[hourZhiIdx],
+    yearStemIdx: yearStemIdx,
+    yearZhiIdx: yearZhiIdx,
+    monthStemIdx: monthStemIdx,
+    monthZhiIdx: monthZhiIdx,
+    dayStemIdx: day.stemIdx,
+    dayZhiIdx: day.zhiIdx,
+    hourStemIdx: hourStemIdx,
+    hourZhiIdx: hourZhiIdx
+  };
+}
+
+function gridWX(value){
+  return NUM_WX[dRoot(value) % 10];
+}
+
+function fiveGridOf(chars, strokes){
+  var surnameLength = chars.length > 1 && COMPOUND_SURNAMES[chars.slice(0, 2).join('')] ? 2 : 1;
+  var surnameStrokes = strokes.slice(0, surnameLength);
+  var givenActualLength = strokes.slice(surnameLength).length;
+  var givenStrokes = strokes.slice(surnameLength);
+  if (!givenStrokes.length) givenStrokes = [1];
+
+  var tian = surnameStrokes.reduce(function(a, b){ return a + b; }, 0) + (surnameLength === 1 ? 1 : 0);
+  var human = surnameStrokes[surnameStrokes.length - 1] + givenStrokes[0];
+  var earth = givenStrokes.reduce(function(a, b){ return a + b; }, 0) + (givenStrokes.length === 1 ? 1 : 0);
+  var total = strokes.reduce(function(a, b){ return a + b; }, 0);
+  var outer = Math.max(1, total - human + (surnameLength === 1 || givenActualLength === 1 ? 1 : 0));
+  var three = [gridWX(tian), gridWX(human), gridWX(earth)];
+  var support = relWX(three[0], three[1]).v * 0.45 + relWX(three[1], three[2]).v * 0.35 +
+    relWX(three[0], three[2]).v * 0.20;
+
+  return {
+    surnameLength: surnameLength,
+    tian: tian, human: human, earth: earth, outer: outer, total: total,
+    three: three, support: support, score: clamp(Math.round(54 + support * 1.35), 24, 96)
+  };
+}
+
+function trigramFromLines(lines){
+  var bits = lines.join('');
+  return TRIGRAM_LINES.indexOf(bits) + 1;
+}
+
+function deriveGua(up, down, move){
+  var downLines = TRIGRAM_LINES[down - 1].split('').map(Number);
+  var upLines = TRIGRAM_LINES[up - 1].split('').map(Number);
+  var lines = downLines.concat(upLines);
+  var changedLines = lines.slice();
+  changedLines[move - 1] = changedLines[move - 1] ? 0 : 1;
+
+  var mutualDown = trigramFromLines([lines[1], lines[2], lines[3]]);
+  var mutualUp = trigramFromLines([lines[2], lines[3], lines[4]]);
+  var changedDown = trigramFromLines(changedLines.slice(0, 3));
+  var changedUp = trigramFromLines(changedLines.slice(3, 6));
+
+  var movingUpper = move >= 4;
+  var bodyTrigram = movingUpper ? down : up;
+  var useTrigram = movingUpper ? up : down;
+  var bodyWX = BG_WX[bodyTrigram - 1];
+  var useWX = BG_WX[useTrigram - 1];
+  var relation = relWX(bodyWX, useWX);
+  var relationName = relation.label === '生我' ? '用生体' :
+    relation.label === '我生' ? '体生用' :
+    relation.label === '我克' ? '体克用' :
+    relation.label === '克我' ? '用克体' : '体用比和';
+  var bodySide = bodyTrigram === up ? 'h' : 'a';
+  var useSide = bodyTrigram === up ? 'a' : 'h';
+  var direction = { h: -2, d: -2, a: -2, label: '体用相持' };
+
+  if (relation.v >= 8){
+    direction[bodySide] = relation.v === 8 ? 6 : 9;
+    direction.d = relation.v === 8 ? 5 : -1;
+    direction.label = relation.v === 8 ? '体用比和，和局之气' : '用生体，体势得助';
+  } else if (WX_KE[bodyWX] === useWX){
+    direction[bodySide] = 8;
+    direction.label = '体克用，主事可制';
+  } else {
+    direction[useSide] = 8;
+    direction.label = WX_SHENG[bodyWX] === useWX ? '体生用，气向外泄' : '用克体，体势受压';
+  }
+
+  return {
+    up: up, down: down, move: move, lines: lines, changedLines: changedLines,
+    name: hexName(up, down), mutualName: hexName(mutualUp, mutualDown),
+    changedName: hexName(changedUp, changedDown),
+    mutualUp: mutualUp, mutualDown: mutualDown,
+    changedUp: changedUp, changedDown: changedDown,
+    bodyTrigram: bodyTrigram, useTrigram: useTrigram,
+    bodyWX: bodyWX, useWX: useWX, relation: relation, relationName: relationName,
+    direction: direction
+  };
+}
+
+/* ---------- 数据解析 ---------- */
+function normalizeMatch(m){
+  var had = null, hhad = null;
+  var hh = m.had && cleanOdd(m.had.h), hd = m.had && cleanOdd(m.had.d), ha = m.had && cleanOdd(m.had.a);
+  if (hh && hd && ha){
+    had = { h: hh, d: hd, a: ha, hf: m.had.hf, df: m.had.df, af: m.had.af };
+  }
+  var rh = m.hhad && cleanOdd(m.hhad.h), rd = m.hhad && cleanOdd(m.hhad.d), ra = m.hhad && cleanOdd(m.hhad.a);
+  if (rh && rd && ra){
+    var line = parseFloat(m.hhad.goalLineValue != null && m.hhad.goalLineValue !== '' ? m.hhad.goalLineValue : m.hhad.goalLine);
+    if (!isFinite(line)) line = 0;
+    line = clamp(line, -10, 10);
+    hhad = { h: rh, d: rd, a: ra, hf: m.hhad.hf, df: m.hhad.df, af: m.hhad.af, line: line };
+  }
+  if (!had && !hhad) return null;
+  var date = cleanText(m.matchDate, '', 10);
+  var num = Number(m.matchNum) || 0;
+  var home = cleanText(m.homeTeamAbbName || m.homeTeamAllName, '主队', 40);
+  var away = cleanText(m.awayTeamAbbName || m.awayTeamAllName, '客队', 40);
+  return {
+    id: cleanText(m.matchId || [date, num, home, away].join('|'), '', 80),
+    num: num,
+    numStr: cleanText(m.matchNumStr, '场次' + num, 20),
+    date: /^\d{4}-\d{2}-\d{2}$/.test(date) ? date : '',
+    time: hhmm(m.matchTime),
+    week: cleanText(m.matchWeek, '', 12),
+    league: cleanText(m.leagueAbbName || m.leagueAllName, '联赛', 24),
+    home: home,
+    away: away,
+    had: had, hhad: hhad,
+    status: cleanText(m.matchStatus, '', 20)
+  };
+}
+function parseDays(json){
+  var v = json && json.value;
+  if (!v || !Array.isArray(v.matchInfoList)) throw new Error('FORMAT');
+  var days = [];
+  for (var i = 0; i < Math.min(v.matchInfoList.length, 31); i++){
+    var day = v.matchInfoList[i];
+    if (!day || typeof day !== 'object') continue;
+    var dayDate = cleanText(day.businessDate, '', 10);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(dayDate)) continue;
+    var list = [];
+    var subs = Array.isArray(day.subMatchList) ? day.subMatchList : [];
+    var seen = {};
+    for (var j = 0; j < Math.min(subs.length, 300); j++){
+      if (!subs[j] || typeof subs[j] !== 'object') continue;
+      if (subs[j].matchStatus && subs[j].matchStatus !== 'Selling') continue;
+      var nm = normalizeMatch(subs[j]);
+      if (nm && nm.id && !seen[nm.id]){
+        seen[nm.id] = true;
+        list.push(nm);
+      }
+    }
+    if (list.length) days.push({ date: dayDate, matches: list });
+  }
+  return days;
+}
+
+/* ---------- 命主档案 ---------- */
+function buildProfile(input){
+  var name = Array.from(String(input.name || '').replace(/\s+/g, '')).slice(0, 12).join('');
+  var chars = Array.from(name);
+  var strokes = [];
+  var total = 0;
+  var unknownChars = [];
+  for (var i = 0; i < chars.length; i++){
+    if (!Object.prototype.hasOwnProperty.call(STROKE, chars[i]) && unknownChars.indexOf(chars[i]) === -1) {
+      unknownChars.push(chars[i]);
+    }
+    var s = strokeOf(chars[i]);
+    strokes.push(s);
+    total += s;
+  }
+  if (!total) total = 13;
+  var nameGrid = fiveGridOf(chars, strokes);
+
+  var bp = String(input.birth || '').split('-');
+  var by = Number(bp[0]) || 1990, bm = Number(bp[1]) || 1, bd = Number(bp[2]) || 1;
+  var birthDate = new Date(by, bm - 1, bd, 12, 0, 0, 0);
+  if (isNaN(birthDate.getTime())) birthDate = new Date(1990, 0, 1, 12, 0, 0, 0);
+  var birthTimeMatch = String(input.birthTime || '').match(/^(\d{2}):(\d{2})$/);
+  var birthHour = birthTimeMatch ? clamp(Number(birthTimeMatch[1]), 0, 23) : null;
+  if (birthHour !== null) birthDate.setHours(birthHour, Number(birthTimeMatch[2]) || 0, 0, 0);
+
+  var birthPillars = pillarsFor(birthDate, birthHour);
+  var birthZhiIdx = birthPillars.yearZhiIdx;
+  var zIdx = (input.zodiac === null || input.zodiac === undefined || input.zodiac < 0) ? birthZhiIdx : Number(input.zodiac);
+  zIdx = clamp(zIdx || 0, 0, 11);
+
+  var when = input.when instanceof Date ? input.when : new Date();
+  var y = when.getFullYear(), mo = when.getMonth() + 1, d = when.getDate(), h = when.getHours();
+  var nowPillars = pillarsFor(when, h);
+  var lunar = nowPillars.lunar;
+  var hourZhi = nowPillars.hourZhiIdx;
+  var gua = qiGua(nowPillars.yearZhiIdx + 1, lunar.month, lunar.day, hourZhi + 1);
+  var guaInfo = deriveGua(gua.up, gua.down, gua.move);
+  var dayMasterWX = GAN_WX[birthPillars.dayStemIdx];
+  var keyTime = y + '-' + mo + '-' + d + '-' + h + '-' + when.getMinutes();
+
+  return {
+    name: name, chars: chars, strokes: strokes, total: total,
+    nameRoot: dRoot(total) || 1, nameGrid: nameGrid, unknownChars: unknownChars,
+    birthZhiIdx: birthZhiIdx, zIdx: zIdx, birthPillars: birthPillars,
+    dayMasterWX: dayMasterWX, mingWX: dayMasterWX, mingNum: dRoot(by + bm + bd) || 1,
+    birth: [by, bm, bd], birthTime: birthHour === null ? '' : String(birthHour).padStart(2, '0') + ':' +
+      String(Number(birthTimeMatch[2]) || 0).padStart(2, '0'),
+    when: when, y: y, mo: mo, d: d, h: h,
+    lunar: lunar, nowPillars: nowPillars,
+    hourZhi: hourZhi, gua: gua, guaInfo: guaInfo,
+    key: [name, input.birth, input.birthTime, zIdx, keyTime].join('|')
+  };
+}
+
+/* ---------- 单场推演 ---------- */
+function moveAdvice(move, sel){
+  var group = move <= 2 ? 'h' : (move <= 4 ? 'd' : 'a');
+  return group === sel ? 6 : -2.5;
+}
+function trendAdj(f){
+  if (f === -1 || f === '-1') return 2;
+  if (f === 1 || f === '1') return -2;
+  return 0;
+}
+
+function analyzeMatch(m, P, rng){
+  var numRoot = dRoot(m.num % 1000 || m.num || 1);
+  var hourNum = Number(String(m.time).split(':')[0]) || 0;
+  var gameZhi = (m.num + Math.floor(hourNum / 2)) % 12;
+  var zrel = relZhi(P.zIdx, gameZhi);
+
+  var upIdx = ((nameVal(m.home) - 1) % 8 + 8) % 8 + 1;
+  var downIdx = ((nameVal(m.away) - 1) % 8 + 8) % 8 + 1;
+  var matchHex = hexName(upIdx, downIdx);
+  var fieldMove = ((P.gua.move + gameZhi + m.num) % 6) + 1;
+  var matchGua = deriveGua(upIdx, downIdx, fieldMove);
+  var coreRelation = relWX(P.guaInfo.bodyWX, matchGua.bodyWX);
+
+  var ctx = {
+    P: P, m: m, numRoot: numRoot, gameZhi: gameZhi, zrel: zrel,
+    matchGua: matchGua, coreRelation: coreRelation, rng: rng, matchHex: matchHex,
+    fieldMove: fieldMove
+  };
+
+  var opts = [];
+  if (m.had){
+    opts.push(makeOpt(ctx, 'had', '胜平负', null, 'h', '胜', m.had.h, m.had.hf));
+    opts.push(makeOpt(ctx, 'had', '胜平负', null, 'd', '平', m.had.d, m.had.df));
+    opts.push(makeOpt(ctx, 'had', '胜平负', null, 'a', '负', m.had.a, m.had.af));
+  }
+  if (m.hhad){
+    var lab = lineText(m.hhad.line);
+    opts.push(makeOpt(ctx, 'hhad', lab, m.hhad.line, 'h', '胜', m.hhad.h, m.hhad.hf));
+    opts.push(makeOpt(ctx, 'hhad', lab, m.hhad.line, 'd', '平', m.hhad.d, m.hhad.df));
+    opts.push(makeOpt(ctx, 'hhad', lab, m.hhad.line, 'a', '负', m.hhad.a, m.hhad.af));
+  }
+
+  opts.sort(function(x, y){
+    if (y.score !== x.score) return y.score - x.score;
+    return x.odds - y.odds;
+  });
+  var best = opts[0];
+
+  return {
+    m: m, opts: opts, opt: best, score: best.score,
+    gameZhi: gameZhi, zrel: zrel, matchHex: matchHex, matchGua: matchGua,
+    coreRelation: coreRelation, guaNote: matchGua.direction.label,
+    numRoot: numRoot, fieldMove: fieldMove
+  };
+}
+
+function makeOpt(ctx, pool, poolLabel, line, sel, selLabel, oddsStr, trend){
+  var P = ctx.P;
+  var r = oddsRoot(oddsStr);
+  var wx = NUM_WX[r % 10];
+  var rel = relWX(P.mingWX, wx);
+
+  var nameHit = (r === P.nameRoot) ? 6 : (Math.abs(r - P.nameRoot) === 4 ? 2 : 0);
+  var numHit  = (r === ctx.numRoot) ? 4 : 0;
+  var yy = ((SX_YANG[P.zIdx] === 1) === (r % 2 === 1)) ? 3 : 0;
+  var mv = moveAdvice(ctx.fieldMove, sel);
+  var tr = trendAdj(trend);
+  var timeRel = Math.round(relWX(ZHI_WX[P.hourZhi], wx).v * 0.45);
+  var directionScore = ctx.matchGua.direction[sel] || 0;
+  var linePen = (pool === 'hhad' && Math.abs(line || 0) >= 2) ? 3 : 0;
+  var seedNoise = (hashStr(ctx.m.id + pool + sel + oddsStr) % 401 - 200) / 120;
+
+  var mingScore = clamp(Math.round(50 + rel.v * 1.08 + (P.nameGrid.score - 50) * 0.34 +
+    ctx.zrel.v * 0.38), 20, 98);
+  var guaScore = clamp(Math.round(50 + ctx.matchGua.relation.v * 0.86 +
+    directionScore * 1.55 + ctx.coreRelation.v * 0.42), 20, 98);
+  var moveScore = clamp(Math.round(50 + mv * 4.2 + (sel === 'd' ? 1 : 0)), 20, 98);
+  var numScore = clamp(Math.round(50 + nameHit * 2.8 + numHit * 3.1 + yy * 1.8 +
+    (4 - Math.abs(r - ctx.numRoot)) * 0.7 + seedNoise), 20, 98);
+  var timeScore = clamp(Math.round(50 + timeRel * 4.1 + tr * 2.8 +
+    relWX(ZHI_WX[ctx.gameZhi], wx).v * 0.28), 20, 98);
+
+  var weighted = mingScore * 0.26 + guaScore * 0.24 + moveScore * 0.18 +
+    numScore * 0.20 + timeScore * 0.12;
+  var score = clamp(Math.round(weighted - linePen + seedNoise), 35, 96);
+
+  return {
+    pool: pool, poolLabel: poolLabel, line: line, sel: sel, selLabel: selLabel,
+    odds: parseFloat(oddsStr), oddsStr: String(oddsStr),
+    root: r, wx: wx, relLabel: rel.label, score: score,
+    parts: { ming: mingScore, gua: guaScore, move: moveScore, num: numScore, time: timeScore },
+    mv: mv, timeRel: timeRel, directionScore: directionScore
+  };
+}
+
+function lineText(line){
+  if (!line) return '平手';
+  var n = Math.abs(line);
+  var s = n % 1 === 0 ? cnNum(n) : String(n);
+  return (line < 0 ? '让' : '受让') + s + '球';
+}
+
+/* ---------- 组合 ---------- */
+function pickCombo(all, size, rng){
+  var pool = all.slice().sort(function(a, b){ return b.score - a.score; })
+                .slice(0, Math.max(size * 3, size + 4));
+  var weighted = pool.map(function(x){
+                   var base = Math.pow(Math.max(x.score - 40, 6), 1.6);
+                   return { x: x, w: base * (0.55 + rng() * 0.9) };
+                 })
+                 .sort(function(a, b){ return b.w - a.w; })
+                 .map(function(o){ return o.x; });
+
+  var leagueUsed = {}, picks = [], i;
+  for (i = 0; i < weighted.length; i++){
+    if (picks.length >= size) break;
+    var lg = weighted[i].m.league;
+    if (leagueUsed[lg]) continue;
+    leagueUsed[lg] = 1;
+    picks.push(weighted[i]);
+  }
+  for (i = 0; i < weighted.length; i++){
+    if (picks.length >= size) break;
+    if (picks.indexOf(weighted[i]) === -1) picks.push(weighted[i]);
+  }
+  if (picks.length < size) return null;
+  picks.sort(function(a, b){ return (a.m.date + a.m.time).localeCompare(b.m.date + b.m.time); });
+
+  var combo = finalizeCombo(picks);
+  combo.sig = picks.map(function(p){ return p.m.id + p.opt.pool + p.opt.sel; }).join('|');
+  return combo;
+}
+
+function finalizeCombo(picks){
+  var sum = 0, odds = 1, i, j;
+  for (i = 0; i < picks.length; i++){ sum += picks[i].score; odds *= picks[i].opt.odds; }
+  var avg = sum / picks.length;
+
+  var coord = 0, good = 0, bad = 0, leagues = {}, dates = {};
+  for (i = 0; i < picks.length; i++){
+    leagues[picks[i].m.league] = 1;
+    dates[picks[i].m.date] = 1;
+    for (j = i + 1; j < picks.length; j++){
+      var a = picks[i].opt.wx, b = picks[j].opt.wx;
+      if (WX_SHENG[a] === b || WX_SHENG[b] === a){ coord += 2; good++; }
+      if (WX_KE[a] === b || WX_KE[b] === a){ coord -= 1.6; bad++; }
+      var zr = relZhi(picks[i].gameZhi, picks[j].gameZhi);
+      if (zr.v >= 9) coord += 1.5;
+      else if (zr.v < 0) coord -= 1.5;
+    }
+  }
+  var leagueCount = Object.keys(leagues).length;
+  var dateCount = Object.keys(dates).length;
+  var coverage = leagueCount * 0.55 + Math.min(dateCount, 3) * 0.35;
+  var score = clamp(Math.round(avg + coord + coverage), 35, 98);
+
+  var numSum = 0, rootSum = 0;
+  for (i = 0; i < picks.length; i++){ numSum += picks[i].m.num; rootSum += picks[i].opt.root; }
+  var up = ((numSum - 1) % 8 + 8) % 8 + 1;
+  var down = ((rootSum - 1) % 8 + 8) % 8 + 1;
+  var move = ((rootSum - 1) % 6 + 6) % 6 + 1;
+  var guaInfo = deriveGua(up, down, move);
+
+  return {
+    picks: picks, score: score, coord: coord, good: good, bad: bad,
+    hex: hexName(up, down), up: up, down: down, move: move,
+    guaInfo: guaInfo, leagues: leagueCount, dates: dateCount, odds: odds, sig: ''
+  };
+}
+
+function closingByScore(s){
+  if (s >= 85) return '卦气通泰，诸爻得位，宜静观其成。';
+  if (s >= 72) return '气机顺遂，诸象相应，可观其势而不必趋之。';
+  if (s >= 60) return '中平之数，生克相间，宜静观而不逐其变。';
+  return '卦象未尽圆融，动爻失位，止于观览为宜。';
+}
+
+function divine(P, matches, size, salt){
+  var rng = mulberry32(hashStr(P.key + '|' + size + '|' + salt));
+  var all = matches.map(function(m){ return analyzeMatch(m, P, rng); });
+  var main = pickCombo(all, size, rng);
+  if (!main) return null;
+  return { P: P, main: main };
+}
+
+function summaryText(res){
+  var P = res.P, main = res.main;
+  var whenLabel = '农历' + P.lunar.label + ZHI[P.hourZhi] + '时';
+  var birthPillars = P.birthPillars;
+  var birthLabel = birthPillars.year + '年 ' + birthPillars.month + '月 ' + birthPillars.day + '日' +
+    (birthPillars.hour ? ' ' + birthPillars.hour + '时' : '（时柱未定）');
+  var nowLabel = P.nowPillars.year + '年 ' + P.nowPillars.month + '月 ' + P.nowPillars.day + '日 ' +
+    P.nowPillars.hour + '时';
+  var balance = main.good > main.bad ? '相生为多' : (main.good === main.bad ? '生克各半' : '相制为多');
+  return whenLabel + '起课，月纲' + nowLabel + '。命造' + birthLabel + '，日主' + P.dayMasterWX +
+    '，本命' + SX[P.zIdx] + '属' + ZHI[P.zIdx] + '。姓名' + P.name + '总格' + P.nameGrid.total +
+    '（数根' + P.nameRoot + '），三才' + P.nameGrid.three.join('·') +
+    (P.unknownChars.length ? '；未收字「' + P.unknownChars.join('') + '」以可复现近似笔画处理' : '') + '。' +
+    '时课得「' + P.guaInfo.name + '」，互「' + P.guaInfo.mutualName + '」，变「' + P.guaInfo.changedName +
+    '」，动爻第' + cnNum(P.gua.move) + '，体' + P.guaInfo.bodyWX + '用' + P.guaInfo.useWX + '，' +
+    P.guaInfo.relationName + '。取' + main.picks.length + '场相串，覆' + main.leagues + '个联赛，合卦「' + main.hex +
+    '」，' + balance + '，总评' + main.score + '分。' +
+    closingByScore(main.score);
+}
+
+function pickNote(p, P){
+  return '主客成卦「' + p.matchHex + '」' + p.matchGua.relationName + '，' + p.guaNote +
+    '；场支' + ZHI[p.gameZhi] + '与' + SX[P.zIdx] + '命' + p.zrel.label +
+    '；与主课时体' + p.coreRelation.label + '；动爻居' + cnNum(p.fieldMove) + '，' +
+    (p.opt.mv > 0 ? '正助此门' : '未助此门') + '；赔' + p.opt.oddsStr + '数根' + p.opt.root + '属' +
+    p.opt.wx + '，' + p.opt.relLabel + '日主';
+}
+
+/* ==================================================================
+   二、渲染层
+   ================================================================== */
+var $ = function(s, r){ return (r || document).querySelector(s); };
+var $$ = function(s, r){ return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+function esc(value){
+  return String(value === null || value === undefined ? '' : value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+var state = {
+  days: [], date: '', matches: [], loading: false, error: '', updated: '',
+  fromCache: false, parlay: 3, expanded: false, salt: 0, result: null, whenMode: 'now',
+  lastLoadedAt: 0, divining: false
+};
+
+function toast(msg){
+  var el = $('#toast');
+  el.textContent = msg;
+  el.classList.add('on');
+  clearTimeout(el._t);
+  el._t = setTimeout(function(){ el.classList.remove('on'); }, 2400);
+}
+
+function setPill(text, cls){
+  var el = $('#dataState');
+  el.className = 'pill' + (cls ? ' ' + cls : '');
+  while (el.firstChild) el.removeChild(el.firstChild);
+  var dot = document.createElement('i');
+  dot.className = 'dot';
+  dot.setAttribute('aria-hidden', 'true');
+  el.appendChild(dot);
+  el.appendChild(document.createTextNode(String(text)));
+}
+
+function notice(el, msg, soft){
+  if (!msg){ el.hidden = true; el.textContent = ''; return; }
+  el.hidden = false;
+  el.className = 'notice' + (soft ? ' soft' : '');
+  el.textContent = msg;
+}
+
+function fmtUpdated(u){
+  if (!u) return '';
+  var s = String(u).replace('T', ' ');
+  if (s.length >= 16) return s.slice(5, 16);
+  return s;
+}
+
+/* ---------- 赛事列表 ---------- */
+function renderDateTabs(){
+  var box = $('#dateTabs');
+  box.innerHTML = '';
+  if (!state.days.length) return;
+  state.days.forEach(function(d){
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'dtab' + (d.date === state.date ? ' on' : '');
+    b.setAttribute('aria-pressed', d.date === state.date ? 'true' : 'false');
+    if (d.date === state.date) b.setAttribute('aria-current', 'date');
+    var md = esc(d.date.slice(5).replace('-', '/'));
+    b.innerHTML = md + '<small>' + d.matches.length + ' 场</small>';
+    b.addEventListener('click', function(){
+      state.date = d.date; state.expanded = false;
+      pickDate(); renderDateTabs(); syncParlay();
+    });
+    box.appendChild(b);
+  });
+}
+
+function oddsCell(label, val, trend){
+  var mark = '';
+  if (trend === 1 || trend === '1') mark = '<i class="up">▲</i>';
+  else if (trend === -1 || trend === '-1') mark = '<i class="dn">▼</i>';
+  var shown = (val === undefined || val === null || val === '') ? '—' : String(val);
+  return '<div class="ocell"><b>' + esc(shown) + mark + '</b><span>' + esc(label) + '</span></div>';
+}
+
+function renderMatches(){
+  var box = $('#matchList');
+  box.innerHTML = '';
+  if (state.loading){
+    $('#moreWrap').hidden = true;
+    for (var i = 0; i < 4; i++){
+      var sk = document.createElement('div');
+      sk.className = 'skel';
+      box.appendChild(sk);
+    }
+    return;
+  }
+  if (!state.matches.length){
+    box.innerHTML = '<div class="notice soft">此刻无在售赛事，可稍后刷新。</div>';
+    return;
+  }
+
+  var list = state.expanded ? state.matches : state.matches.slice(0, 12);
+  list.forEach(function(m){
+    var row = document.createElement('div');
+    row.className = 'mrow';
+    var matchDate = m.date ? m.date.slice(5).replace('-', '/') : '';
+    var head = '<div class="mmeta"><span class="mnum">' + esc(m.numStr) + '</span>' +
+      '<span class="mleague">' + esc(m.league) + '</span>' +
+      '<span class="mtime">' + esc(matchDate) + ' ' + esc(m.time) + '</span></div>' +
+      '<div class="mteams">' + esc(m.home) + '<em>对</em>' + esc(m.away) + '</div>';
+
+    var hadHtml = '';
+    if (m.had){
+      hadHtml += '<div class="ogroup"><span class="og-title">胜平负</span><div class="ocells">' +
+        oddsCell('胜', m.had.h, m.had.hf) + oddsCell('平', m.had.d, m.had.df) + oddsCell('负', m.had.a, m.had.af) +
+        '</div></div>';
+    }
+    var hhadHtml = '';
+    if (m.hhad){
+      hhadHtml += '<div class="ogroup"><span class="og-title">' + lineText(m.hhad.line) + '</span><div class="ocells">' +
+        oddsCell('胜', m.hhad.h, m.hhad.hf) + oddsCell('平', m.hhad.d, m.hhad.df) + oddsCell('负', m.hhad.a, m.hhad.af) +
+        '</div></div>';
+    }
+    row.innerHTML = '<div>' + head + '</div><div class="odds-wrap">' + hadHtml + hhadHtml + '</div>';
+    box.appendChild(row);
+  });
+
+  var more = $('#moreWrap');
+  more.hidden = state.matches.length <= 12;
+  $('#btnMore').textContent = state.expanded ? '收起赛事' : ('展开全部 ' + state.matches.length + ' 场赛事');
+  $('#btnMore').setAttribute('aria-expanded', state.expanded ? 'true' : 'false');
+}
+
+function pickDate(){
+  var day = state.days.filter(function(d){ return d.date === state.date; })[0];
+  state.matches = day ? day.matches : [];
+  renderMatches();
+}
+
+function syncParlay(){
+  var max = Math.min(7, state.matches.length);
+  var btns = $$('#parlayGroup .pbtn');
+  btns.forEach(function(b){
+    var n = Number(b.dataset.n);
+    var off = n > max;
+    b.disabled = off;
+    b.classList.toggle('on', n === state.parlay && !off);
+    b.setAttribute('aria-pressed', n === state.parlay && !off ? 'true' : 'false');
+  });
+  if (state.parlay > max) state.parlay = max || 1;
+  if (max >= 2 && state.parlay < 2) state.parlay = Math.min(3, max);
+  btns.forEach(function(b){
+    var n = Number(b.dataset.n);
+    var active = n === state.parlay && !b.disabled;
+    b.classList.toggle('on', active);
+    b.setAttribute('aria-pressed', active ? 'true' : 'false');
+  });
+  var hint = $('#parlayHint');
+  if (state.matches.length && max < 2){
+    notice(hint, '当前仅 ' + state.matches.length + ' 场可推，不足以成串，请切换日期或稍后刷新。', true);
+  } else if (state.matches.length && max < 7){
+    notice(hint, '当前 ' + state.date.slice(5) + ' 共 ' + state.matches.length + ' 场可推，故最多 ' + max + ' 串 1。', true);
+  } else {
+    notice(hint, '', true);
+  }
+}
+
+/* ---------- 加载数据 ---------- */
+var CACHE_KEY = 'xuanshu_jc_cache_v1';
+var DRAFT_KEY = 'xuanshu_form_draft_v1';
+
+function draftSave(){
+  try {
+    sessionStorage.setItem(DRAFT_KEY, JSON.stringify({
+      name: $('#fName').value,
+      birth: $('#fBirth').value,
+      birthTime: $('#fBirthTime').value,
+      zodiac: $('#fZodiac').value,
+      whenMode: state.whenMode,
+      when: $('#fWhen').value,
+      parlay: state.parlay
+    }));
+  } catch (e) {}
+}
+
+function draftLoad(){
+  try {
+    var draft = JSON.parse(sessionStorage.getItem(DRAFT_KEY) || 'null');
+    if (!draft || typeof draft !== 'object') return;
+    $('#fName').value = cleanText(draft.name, '', 12);
+    $('#fBirth').value = /^\d{4}-\d{2}-\d{2}$/.test(draft.birth || '') ? draft.birth : '';
+    $('#fBirthTime').value = /^\d{2}:\d{2}$/.test(draft.birthTime || '') ? draft.birthTime : '';
+    var zodiac = Number(draft.zodiac);
+    if (zodiac >= 0 && zodiac <= 11) $('#fZodiac').value = String(zodiac);
+    state.whenMode = draft.whenMode === 'custom' ? 'custom' : 'now';
+    $$('#timeSeg button').forEach(function(button){
+      var active = button.dataset.mode === state.whenMode;
+      button.classList.toggle('on', active);
+      button.setAttribute('aria-pressed', active ? 'true' : 'false');
+    });
+    $('#fWhen').hidden = state.whenMode !== 'custom';
+    if (draft.when) $('#fWhen').value = String(draft.when);
+    var parlay = Number(draft.parlay);
+    if (parlay >= 2 && parlay <= 7){
+      state.parlay = parlay;
+      $$('#parlayGroup .pbtn').forEach(function(button){
+        var active = Number(button.dataset.n) === parlay;
+        button.classList.toggle('on', active);
+        button.setAttribute('aria-pressed', active ? 'true' : 'false');
+      });
+    }
+    syncZodiacAuto();
+  } catch (e) {}
+}
+
+function cacheSave(days, updated){
+  try {
+    localStorage.setItem(CACHE_KEY, JSON.stringify({ t: Date.now(), days: days, u: updated }));
+  } catch (e) {}
+}
+function cacheLoad(){
+  try {
+    var raw = localStorage.getItem(CACHE_KEY);
+    if (!raw) return null;
+    var obj = JSON.parse(raw);
+    if (!obj || !obj.days || !obj.days.length) return null;
+    if (Date.now() - obj.t > 1000 * 60 * 60 * 12) return null;
+    var days = obj.days.map(function(d){
+      return {
+        date: d.date,
+        matches: (d.matches || []).filter(function(m){ return m && m.id && (m.had || m.hhad); })
+      };
+    }).filter(function(d){ return d.matches.length; });
+    if (!days.length) return null;
+    return { days: days, updated: obj.u };
+  } catch (e) { return null; }
+}
+
+var nativeRequestSeq = 0;
+var nativePending = {};
+
+window.__xuanshuNativeResult = function(id, ok, body, errorMessage){
+  var pending = nativePending[String(id)];
+  if (!pending) return;
+  delete nativePending[String(id)];
+  clearTimeout(pending.timer);
+  if (!ok){
+    pending.reject(new Error(errorMessage || '原生取数失败'));
+    return;
+  }
+  try {
+    var json = JSON.parse(body);
+    if (!json || !json.value || !Array.isArray(json.value.matchInfoList)) throw new Error('FORMAT');
+    pending.resolve(json);
+  } catch (e) {
+    pending.reject(new Error('原生取数返回格式异常'));
+  }
+};
+
+function fetchNativeMatches(timeoutMs){
+  return new Promise(function(resolve, reject){
+    var id = String(++nativeRequestSeq);
+    var timer = setTimeout(function(){
+      delete nativePending[id];
+      reject(new Error('原生取数超时'));
+    }, timeoutMs || 9000);
+    nativePending[id] = { resolve: resolve, reject: reject, timer: timer };
+    try {
+      NATIVE_BRIDGE.postMessage({ action: 'fetchMatches', id: id });
+    } catch (e) {
+      clearTimeout(timer);
+      delete nativePending[id];
+      reject(e);
+    }
+  });
+}
+
+function dataSources(){
+  if (NATIVE_BRIDGE) return [{ url: API, tag: '系统直连', native: true }];
+  var list = [];
+  if (location.protocol === 'http:' || location.protocol === 'https:'){
+    list.push({ url: RELAY_SAME, tag: '本地中转' });
+  }
+  list.push({ url: RELAY_LOCAL, tag: '本地中转' });
+  list.push({ url: API, tag: '官方直连' });
+  return list;
+}
+
+function fetchSource(src, timeoutMs){
+  if (src.native) return fetchNativeMatches(timeoutMs);
+  return new Promise(function(resolve, reject){
+    var ctrl = null, timer = null;
+    if (typeof AbortController !== 'undefined'){
+      ctrl = new AbortController();
+      timer = setTimeout(function(){ try { ctrl.abort(); } catch (e) {} }, timeoutMs || 5500);
+    }
+    var url = src.url + (src.url.indexOf('?') > -1 ? '&' : '?') + '_t=' + Date.now();
+    fetch(url, { cache: 'no-store', signal: ctrl ? ctrl.signal : undefined })
+      .then(function(res){
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.json();
+      })
+      .then(function(json){
+        if (timer) clearTimeout(timer);
+        if (!json || !json.value || !Array.isArray(json.value.matchInfoList)) throw new Error('FORMAT');
+        resolve(json);
+      })
+      .catch(function(err){
+        if (timer) clearTimeout(timer);
+        reject(err || new Error('FETCH'));
+      });
+  });
+}
+
+function firstSuccessfulSource(sources, timeoutMs){
+  return new Promise(function(resolve, reject){
+    var failures = [], pending = sources.length, settled = false;
+    if (!pending){ reject({ tries: failures }); return; }
+    sources.forEach(function(src){
+      fetchSource(src, timeoutMs).then(function(json){
+        if (settled) return;
+        settled = true;
+        resolve({ json: json, src: src, tries: failures });
+      }).catch(function(err){
+        failures.push({ tag: src.tag, err: err });
+        pending--;
+        if (!settled && pending === 0){
+          settled = true;
+          reject({ tries: failures });
+        }
+      });
+    });
+  });
+}
+
+function setLoadingState(loading){
+  state.loading = loading;
+  var button = $('#btnRefresh');
+  button.disabled = loading;
+  button.textContent = loading ? '取数中…' : '刷新数据';
+  $('#matchList').setAttribute('aria-busy', loading ? 'true' : 'false');
+}
+
+function diagnoseFailure(tries){
+  var wafBlocked = false, relayDown = false, timeout = false;
+  for (var i = 0; i < tries.length; i++){
+    var t = tries[i];
+    var msg = String((t.err && t.err.message) || '');
+    if (msg.indexOf('567') > -1 || msg.indexOf('403') > -1) wafBlocked = true;
+    if (t.err && t.err.name === 'AbortError') timeout = true;
+    if (t.tag === '本地中转' && /HTTP 40[04]|Failed to fetch|NetworkError|ERR_/.test(msg)) relayDown = true;
+  }
+  var reason;
+  if (wafBlocked) reason = '数据源拒绝浏览器直连（反抓取拦截）';
+  else if (relayDown) reason = '本地中转未运行';
+  else if (timeout) reason = '取数超时';
+  else reason = '数据源暂不可达';
+  if (NATIVE_BRIDGE){
+    return {
+      reason: reason,
+      tip: '请检查网络后点「刷新数据」重试，已获取的数据仍会保留在设备本地。'
+    };
+  }
+  return {
+    reason: reason,
+    tip: wafBlocked || relayDown
+      ? '双击本目录中的「启动.bat」，由本地中转取数（浏览器会自动打开 127.0.0.1:8899），再点「刷新数据」。'
+      : '请检查网络后点「刷新数据」重试。'
+  };
+}
+
+function loadMatches(manual){
+  if (state.loading) return;
+  setLoadingState(true);
+  state.error = '';
+  setPill('取数中…', 'warn');
+  renderMatches();
+
+  var sources = dataSources();
+
+  function apply(json, src){
+    setLoadingState(false);
+    state.sourceTag = src.tag;
+    var upd = (json && json.value && json.value.lastUpdateTime) || '';
+    var days = [];
+    try { days = parseDays(json); } catch (e) { days = []; }
+    state.lastLoadedAt = Date.now();
+
+    if (!days.length){
+      state.days = []; state.matches = []; state.date = '';
+      renderMatches(); renderDateTabs(); syncParlay();
+      setPill('暂无赛事', 'warn');
+      notice($('#matchNotice'), '已连通数据源，但当前没有在售的竞彩足球赛事，可稍后点「刷新数据」。', true);
+      return;
+    }
+
+    state.days = days;
+    state.fromCache = false;
+    state.updated = upd;
+    if (!days.some(function(d){ return d.date === state.date; })) state.date = days[0].date;
+    cacheSave(days, upd);
+    pickDate();
+    renderDateTabs();
+    syncParlay();
+    setPill('数据更新 ' + (fmtUpdated(upd) || '此刻'), 'ok');
+    notice($('#matchNotice'), '', true);
+    if (manual) toast('已取最新赛事');
+  }
+
+  function fail(list){
+    setLoadingState(false);
+    state.lastLoadedAt = Date.now();
+    var d = diagnoseFailure(list);
+    var cached = cacheLoad();
+    if (cached){
+      state.days = cached.days;
+      state.fromCache = true;
+      state.lastLoadedAt = Date.now();
+      state.updated = cached.updated || '';
+      if (!state.days.some(function(x){ return x.date === state.date; })) state.date = state.days[0].date;
+      pickDate();
+      renderDateTabs();
+      syncParlay();
+      setPill('离线缓存', 'warn');
+      notice($('#matchNotice'), '刷新失败（' + d.reason + '），现展示 ' +
+        (fmtUpdated(cached.updated) || '上次') + ' 的本地缓存。' + d.tip, false);
+    } else {
+      state.matches = [];
+      renderMatches();
+      renderDateTabs();
+      syncParlay();
+      setPill('取数失败', 'err');
+      notice($('#matchNotice'), '未能取得赛事数据：' + d.reason + '。' + d.tip, false);
+    }
+    if (manual) toast('刷新未成：' + d.reason);
+  }
+
+  var usePrimary = sources.length > 1 && sources[0].url === RELAY_SAME;
+  if (usePrimary){
+    fetchSource(sources[0], 3500).then(function(json){
+      apply(json, sources[0]);
+    }).catch(function(firstError){
+      firstSuccessfulSource(sources.slice(1), 5500).then(function(result){
+        result.tries.unshift({ tag: sources[0].tag, err: firstError });
+        apply(result.json, result.src);
+      }).catch(function(result){
+        fail([{ tag: sources[0].tag, err: firstError }].concat(result.tries || []));
+      });
+    });
+    return;
+  }
+
+  firstSuccessfulSource(sources, 5500).then(function(result){
+    apply(result.json, result.src);
+  }).catch(function(result){
+    fail(result.tries || []);
+  });
+}
+
+/* ---------- 结果渲染 ---------- */
+function pickRowHTML(p, P, idx){
+  var o = p.opt;
+  var poolChip = o.pool === 'hhad' ? o.poolLabel : '胜平负';
+  return '<div class="pick">' +
+    '<div class="pidx">' + CN_NUM[idx + 1] + '</div>' +
+    '<div class="pmain">' +
+      '<div class="ptop"><span class="mnum">' + esc(p.m.numStr) + '</span>' +
+      '<span class="mleague">' + esc(p.m.league) + '</span>' +
+      '<span class="mtime">' + esc(p.m.date.slice(5).replace('-', '/')) + ' ' + esc(p.m.time) + '</span></div>' +
+      '<div class="pteams">' + esc(p.m.home) + '<em>对</em>' + esc(p.m.away) + '</div>' +
+      '<div class="pnote">' + esc(pickNote(p, P)) + '</div>' +
+    '</div>' +
+    '<div class="psel">' +
+      '<span class="chip-pool">' + esc(poolChip) + '</span>' +
+      '<span class="chip-sel">' + esc(o.selLabel) + '</span>' +
+      '<span class="chip-odd">' + esc(o.oddsStr) + '</span>' +
+      '<span class="chip-score">' + p.score + ' 分</span>' +
+    '</div>' +
+  '</div>';
+}
+
+function renderResult(res){
+  state.result = res;
+  var P = res.P, main = res.main;
+  $('#cardResult').hidden = false;
+
+  // 评分环
+  var C = 2 * Math.PI * 52;
+  var ring = $('#ringFg');
+  ring.style.strokeDasharray = C.toFixed(2);
+  ring.style.strokeDashoffset = (C * (1 - main.score / 100)).toFixed(2);
+  $('#scoreNum').textContent = main.score;
+
+  $('#hexName').innerHTML = '「<span class="gua">' + esc(main.hex) + '</span>」';
+  $('#hexSub').innerHTML = '上卦 ' + esc(BG[main.up - 1]) + ' · 下卦 ' + esc(BG[main.down - 1]) +
+    ' · 动爻第' + cnNum(main.move) + '<span class="hs-time">　｜　时课「' + esc(P.guaInfo.name) +
+    '」→「' + esc(P.guaInfo.mutualName) + '」→「' + esc(P.guaInfo.changedName) + '」</span>';
+
+  $('#mParlay').textContent = main.picks.length + ' 串 1';
+  $('#mOdds').textContent = main.odds.toFixed(2);
+  $('#mTime').textContent = P.lunar.monthName + P.lunar.dayText + '日 ' + ZHI[P.hourZhi] + '时';
+
+  $('#readingLunar').textContent = P.lunar.label;
+  $('#readingPillars').textContent = '月纲 ' + P.nowPillars.year + ' · ' + P.nowPillars.month + ' · ' +
+    P.nowPillars.day + '；命造 ' + P.birthPillars.year + ' · ' + P.birthPillars.month + ' · ' +
+    P.birthPillars.day + ' · ' + (P.birthPillars.hour || '时柱未定');
+  $('#readingName').textContent = '日主 ' + P.dayMasterWX + ' · 三才 ' + P.nameGrid.three.join('·');
+  $('#readingNameDetail').textContent = '天' + P.nameGrid.tian + ' 人' + P.nameGrid.human + ' 地' +
+    P.nameGrid.earth + ' 外' + P.nameGrid.outer + ' 总' + P.nameGrid.total +
+    (P.unknownChars.length ? ' · 近似字 ' + P.unknownChars.join('') : '');
+  $('#readingHex').textContent = P.guaInfo.name + ' → ' + P.guaInfo.mutualName + ' → ' + P.guaInfo.changedName;
+  $('#readingHexDetail').textContent = '体' + P.guaInfo.bodyWX + ' 用' + P.guaInfo.useWX + ' · ' +
+    P.guaInfo.relationName + ' · 动爻第' + cnNum(P.gua.move);
+
+  $('#comboList').innerHTML = main.picks.map(function(p, i){ return pickRowHTML(p, P, i); }).join('');
+
+  $('#summaryBox').innerHTML = '<span class="st">推 演 摘 要</span>' + esc(summaryText(res));
+
+  // 权重推演
+  var dims = [
+    { k: '命格日主', key: 'ming', w: 0.26 },
+    { k: '时课体用', key: 'gua',  w: 0.24 },
+    { k: '动爻场气', key: 'move', w: 0.18 },
+    { k: '河洛数字', key: 'num',  w: 0.20 },
+    { k: '月建时气', key: 'time', w: 0.12 }
+  ];
+  var html = dims.map(function(d){
+    var sumv = 0;
+    main.picks.forEach(function(p){ sumv += p.opt.parts[d.key]; });
+    var avgv = sumv / main.picks.length;
+    var val = clamp(Math.round(avgv), 0, 100);
+    return '<div class="wrow"><div class="wn">' + d.k + '</div>' +
+      '<div class="wbar"><i style="width:' + val + '%"></i></div>' +
+      '<div class="wv">' + Math.round(d.w * 100) + '%</div></div>';
+  }).join('');
+  $('#weightRows').innerHTML = html;
+
+  $('#btnAgain').hidden = false;
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  $('#cardResult').scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+  $('#cardResult').focus({ preventScroll: true });
+}
+
+/* ---------- 复制 ---------- */
+function comboClipboard(res){
+  var P = res.P, main = res.main;
+  var lines = [];
+  lines.push('【玄枢阁 · 天机串关】');
+  lines.push(main.picks.length + '串1　合赔 ' + main.odds.toFixed(2) + '　玄学评分 ' + main.score + ' 分');
+  lines.push('合卦：「' + main.hex + '」　时卦：' + hexName(P.gua.up, P.gua.down) + '　动爻第' + cnNum(P.gua.move));
+  main.picks.forEach(function(p, i){
+    var o = p.opt;
+    lines.push((i + 1) + '. ' + p.m.numStr + ' ' + p.m.league + ' ' + p.m.home + ' vs ' + p.m.away +
+      ' → ' + (o.pool === 'hhad' ? o.poolLabel + ' ' : '胜平负 ') + o.selLabel + ' @' + o.oddsStr + '（' + p.score + '分）');
+  });
+  lines.push('摘要：' + summaryText(res));
+  lines.push('※ 玄学娱乐，不构成投注建议。');
+  return lines.join('\n');
+}
+
+function legacyCopy(text){
+  try {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', 'readonly');
+    ta.style.position = 'fixed';
+    ta.style.top = '-1000px';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    ta.setSelectionRange(0, ta.value.length);
+    var ok = document.execCommand('copy');
+    document.body.removeChild(ta);
+    return !!ok;
+  } catch (e) { return false; }
+}
+
+function copyText(text){
+  return new Promise(function(resolve){
+    var settled = false, fallbackTimer = null;
+    function finish(ok){ if (settled) return; settled = true; resolve(ok); }
+    if (navigator.clipboard && navigator.clipboard.writeText && window.isSecureContext){
+      fallbackTimer = setTimeout(function(){
+        if (!settled) finish(legacyCopy(text));
+      }, 800);
+      navigator.clipboard.writeText(text).then(function(){
+        clearTimeout(fallbackTimer);
+        finish(true);
+      }, function(){
+        clearTimeout(fallbackTimer);
+        finish(legacyCopy(text));
+      });
+    } else {
+      finish(legacyCopy(text));
+    }
+  });
+}
+
+/* ---------- 仪轨显象 ---------- */
+var RITUAL_STAGES = [
+  { name: '净心', title: '净心定盘', detail: '收摄杂念，令名数、日主与时气各归其位。' },
+  { name: '校历', title: '参辰校历', detail: '校准农历月建、日数与当下时支。' },
+  { name: '拆名', title: '拆名观格', detail: '分姓氏与名讳，排天、人、地、外、总五格。' },
+  { name: '起卦', title: '梅花起课', detail: '以年支、月日、时支起本卦，推互卦与变卦。' },
+  { name: '辨体', title: '体用辨气', detail: '观动爻所在，以体用五行判断气机向背。' },
+  { name: '纳象', title: '逐场纳象', detail: '以主客队名成卦，纳入场次、日主与河洛数字。' },
+  { name: '合串', title: '诸象合串', detail: '校验五行生克、地支冲合、联赛与日期离散。' },
+  { name: '封签', title: '落印封签', detail: '主卦既定，唯一成签。' }
+];
+var ritualTimer = null;
+
+function ritualDetail(index, res, isAgain){
+  var P = res.P, main = res.main;
+  if (index === 0) return isAgain ? '再问一卦，仍候原时课之气。' : RITUAL_STAGES[index].detail;
+  if (index === 1) return '农历' + P.lunar.label + ' · ' + P.nowPillars.hour + '时';
+  if (index === 2) return '三才 ' + P.nameGrid.three.join('·') + ' · 总格 ' + P.nameGrid.total;
+  if (index === 3) return '本「' + P.guaInfo.name + '」· 互「' + P.guaInfo.mutualName + '」· 变「' + P.guaInfo.changedName + '」';
+  if (index === 4) return '体' + P.guaInfo.bodyWX + ' · 用' + P.guaInfo.useWX + ' · ' + P.guaInfo.relationName;
+  if (index === 5) return '正推 ' + state.matches.length + ' 场，取象入盘。';
+  if (index === 6) return '合卦「' + main.hex + '」· 覆 ' + main.leagues + ' 个联赛';
+  return main.picks.length + ' 串 1 · 合赔 ' + main.odds.toFixed(2) + ' · 签成';
+}
+
+function runRitual(res, isAgain, done){
+  state.divining = true;
+  var panel = $('#ritualPanel');
+  var stagesBox = $('#ritualStages');
+  var progress = $('#ritualProgress');
+  var progressBar = $('#ritualProgressBar');
+  var go = $('#btnGo');
+  var wrap = $('.wrap');
+  var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var fullDurations = [500, 650, 600, 750, 700, 850, 750, 500];
+  var repeatDurations = [250, 300, 280, 380, 350, 430, 380, 250];
+  var durations = (reduced ? fullDurations.map(function(){ return 110; }) :
+    (isAgain ? repeatDurations : fullDurations));
+
+  clearTimeout(ritualTimer);
+  stagesBox.innerHTML = '';
+  RITUAL_STAGES.forEach(function(stage, index){
+    var item = document.createElement('div');
+    item.className = 'ritual-stage';
+    item.dataset.index = String(index);
+    item.textContent = stage.name;
+    stagesBox.appendChild(item);
+  });
+  $('#ritualTitle').textContent = isAgain ? '再问一卦' : '净心定盘';
+  $('#ritualDetail').textContent = RITUAL_STAGES[0].detail;
+  progressBar.style.width = '0%';
+  progress.setAttribute('aria-valuenow', '0');
+  $('#ritualCount').textContent = '一候';
+  $('#ritualOverlay').hidden = false;
+  document.body.classList.add('ritual-open');
+  wrap.inert = true;
+  wrap.setAttribute('aria-hidden', 'true');
+  go.disabled = true;
+  go.textContent = '推演中…';
+  $('#btnAgain').disabled = true;
+  panel.focus();
+
+  function finish(){
+    clearTimeout(ritualTimer);
+    progressBar.style.width = '100%';
+    progress.setAttribute('aria-valuenow', '100');
+    ritualTimer = setTimeout(function(){
+      $('#ritualOverlay').hidden = true;
+      document.body.classList.remove('ritual-open');
+      wrap.inert = false;
+      wrap.removeAttribute('aria-hidden');
+      go.disabled = false;
+      go.textContent = '起卦推演';
+      $('#btnAgain').disabled = false;
+      state.divining = false;
+      done();
+    }, reduced ? 60 : 260);
+  }
+
+  function step(index){
+    var item = stagesBox.querySelector('.ritual-stage[data-index="' + index + '"]');
+    $$('.ritual-stage', stagesBox).forEach(function(node){
+      var nodeIndex = Number(node.dataset.index);
+      node.classList.toggle('on', nodeIndex === index);
+      node.classList.toggle('done', nodeIndex < index);
+    });
+    $('#ritualTitle').textContent = RITUAL_STAGES[index].title;
+    $('#ritualDetail').textContent = ritualDetail(index, res, isAgain);
+    $('#ritualCount').textContent = CN_NUM[index + 1] + '候';
+    var percent = Math.round((index + 1) / RITUAL_STAGES.length * 92);
+    progressBar.style.width = percent + '%';
+    progress.setAttribute('aria-valuenow', String(percent));
+    progress.setAttribute('aria-valuetext', RITUAL_STAGES[index].title);
+    if (item) item.classList.add('on');
+    if (index + 1 >= RITUAL_STAGES.length){
+      finish();
+      return;
+    }
+    ritualTimer = setTimeout(function(){ step(index + 1); }, durations[index]);
+  }
+
+  ritualTimer = setTimeout(function(){ step(0); }, reduced ? 50 : 180);
+}
+
+/* ==================================================================
+   三、交互
+   ================================================================== */
+function initZodiac(){
+  var sel = $('#fZodiac');
+  sel.innerHTML = '<option value="-1">依生辰自动取</option>' +
+    SX.map(function(s, i){
+      return '<option value="' + i + '">' + s + '（' + ZHI[i] + '）</option>';
+    }).join('');
+}
+
+function syncZodiacAuto(){
+  var b = $('#fBirth').value;
+  var opt = $('#fZodiac').querySelector('option[value="-1"]');
+  if (!b || !opt) return;
+  var y = Number(b.split('-')[0]);
+  if (!y) return;
+  var z = ((y - 4) % 12 + 12) % 12;
+  opt.textContent = '依生辰自动（' + SX[z] + '·' + ZHI[z] + '）';
+}
+
+function initParlay(){
+  var box = $('#parlayGroup');
+  box.innerHTML = '';
+  for (var n = 2; n <= 7; n++){
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'pbtn' + (n === state.parlay ? ' on' : '');
+    b.dataset.n = n;
+    b.setAttribute('aria-pressed', n === state.parlay ? 'true' : 'false');
+    b.innerHTML = n + ' 串 1';
+    b.addEventListener('click', function(){
+      if (this.disabled) return;
+      state.salt = 0;
+      state.parlay = Number(this.dataset.n);
+      $$('#parlayGroup .pbtn').forEach(function(x){
+        x.classList.remove('on');
+        x.setAttribute('aria-pressed', 'false');
+      });
+      this.classList.add('on');
+      this.setAttribute('aria-pressed', 'true');
+      draftSave();
+    });
+    box.appendChild(b);
+  }
+}
+
+function heroDate(){
+  var now = new Date();
+  var y = now.getFullYear();
+  var gz = ((y - 4) % 10 + 10) % 10, zz = ((y - 4) % 12 + 12) % 12;
+  var hz = Math.floor(((now.getHours() + 1) % 24) / 2) % 12;
+  $('#heroDate').textContent = GAN[gz] + ZHI[zz] + '年　' + (now.getMonth() + 1) + '月' + now.getDate() +
+    '日　' + ZHI[hz] + '时';
+}
+
+function getWhen(){
+  if (state.whenMode === 'custom'){
+    var v = $('#fWhen').value;
+    if (!v) return null;
+    var d = new Date(v);
+    return isNaN(d.getTime()) ? null : d;
+  }
+  return new Date();
+}
+
+function localDateValue(){
+  var now = new Date();
+  return now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' +
+    String(now.getDate()).padStart(2, '0');
+}
+
+function doDivine(salt, isAgain){
+  if (state.divining) return;
+  var name = $('#fName').value.trim();
+  var birth = $('#fBirth').value;
+  var birthTime = $('#fBirthTime').value;
+  var zVal = Number($('#fZodiac').value);
+  var when = getWhen();
+  var fNotice = $('#formNotice');
+
+  if (!name){ notice(fNotice, '请先填写姓名，方能取字画之数。', false); $('#fName').focus(); return; }
+  if (!birth){ notice(fNotice, '请填写出生日期，以取生肖与命数。', false); $('#fBirth').focus(); return; }
+  if (birth > localDateValue()){
+    notice(fNotice, '出生日期不能晚于今天。', false); $('#fBirth').focus(); return;
+  }
+  if (!when){ notice(fNotice, '请填写有效的预测时间。', false); return; }
+  if (!state.matches.length){
+    notice(fNotice, '当前无在售赛事，请先刷新赛事数据。', false);
+    return;
+  }
+  if (state.matches.length < state.parlay){
+    notice(fNotice, '当前仅 ' + state.matches.length + ' 场可推，不足以成 ' + state.parlay + ' 串 1。', false);
+    return;
+  }
+  if (state.parlay < 2){
+    notice(fNotice, '此刻可推场次不足 2 场，无法成串，请切换日期或稍后刷新。', false);
+    return;
+  }
+  notice(fNotice, '', false);
+
+  var P = buildProfile({
+    name: name, birth: birth, birthTime: birthTime,
+    zodiac: zVal < 0 ? null : zVal, when: when
+  });
+  var res = divine(P, state.matches, state.parlay, salt || 0, null);
+  if (!res){ toast(isAgain ? '已无更多组合' : '卦象未成，请再试'); return; }
+  runRitual(res, isAgain, function(){
+    renderResult(res);
+    if (isAgain){
+      toast('已换一卦');
+    } else if (state.whenMode === 'now'){
+      var t = when.getHours() + ':' + String(when.getMinutes()).padStart(2, '0');
+      toast('卦成 · 此刻 ' + t);
+    } else {
+      toast('卦成');
+    }
+  });
+}
+
+function bindEvents(){
+  $('#btnRefresh').addEventListener('click', function(){ loadMatches(true); });
+
+  $('#btnMore').addEventListener('click', function(){
+    state.expanded = !state.expanded;
+    renderMatches();
+  });
+
+  $('#timeSeg').addEventListener('click', function(e){
+    var b = e.target.closest('button');
+    if (!b) return;
+    var mode = b.dataset.mode;
+    state.whenMode = mode;
+    $$('#timeSeg button').forEach(function(x){
+      var active = x === b;
+      x.classList.toggle('on', active);
+      x.setAttribute('aria-pressed', active ? 'true' : 'false');
+    });
+    var inp = $('#fWhen');
+    if (mode === 'custom'){
+      inp.hidden = false;
+      if (!inp.value){
+        var d = new Date();
+        inp.value = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' +
+          String(d.getDate()).padStart(2, '0') + 'T' + String(d.getHours()).padStart(2, '0') + ':' +
+          String(d.getMinutes()).padStart(2, '0');
+      }
+    } else {
+      inp.hidden = true;
+    }
+    draftSave();
+  });
+
+  $('#btnGo').addEventListener('click', function(){ state.salt = 0; doDivine(0, false); });
+
+  $('#btnAgain').addEventListener('click', function(){
+    if (!state.result) return;
+    state.salt = (state.salt || 0) + 1;
+    doDivine(state.salt, true);
+  });
+
+  $('#btnCopy').addEventListener('click', function(){
+    if (!state.result){ toast('尚无卦象可复制'); return; }
+    copyText(comboClipboard(state.result)).then(function(ok){
+      toast(ok ? '此卦已抄录至剪贴板' : '复制未成，请手动选取文字');
+    });
+  });
+
+  $('#fBirth').addEventListener('change', syncZodiacAuto);
+  $('#fBirth').addEventListener('input', syncZodiacAuto);
+  ['#fName', '#fBirth', '#fBirthTime', '#fZodiac', '#fWhen'].forEach(function(selector){
+    var field = $(selector);
+    field.addEventListener('input', draftSave);
+    field.addEventListener('change', draftSave);
+  });
+
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Enter' && (e.target === $('#fName') || e.target === $('#fBirth'))) doDivine(0, false);
+  });
+
+  document.addEventListener('visibilitychange', function(){
+    if (document.hidden || state.loading) return;
+    if (state.lastLoadedAt && Date.now() - state.lastLoadedAt > 5 * 60 * 1000) loadMatches(false);
+  });
+}
+
+/* ---------- 启动 ---------- */
+function boot(){
+  heroDate();
+  initZodiac();
+  syncZodiacAuto();
+  initParlay();
+  bindEvents();
+  $('#fBirth').max = localDateValue();
+  var now = new Date();
+  $('#fWhen').value = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' +
+    String(now.getDate()).padStart(2, '0') + 'T' + String(now.getHours()).padStart(2, '0') + ':' +
+    String(now.getMinutes()).padStart(2, '0');
+  draftLoad();
+  loadMatches(false);
+}
+
+if (document.readyState === 'loading'){
+  document.addEventListener('DOMContentLoaded', boot);
+} else {
+  boot();
+}
+
+})();
+</script>
+</body>
+</html>
