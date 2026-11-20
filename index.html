@@ -1595,13 +1595,29 @@ window.__xuanshuNativeResult = function(id, ok, body, errorMessage){
   }
 };
 
+window.__xuanshuNativeResultB64 = function(encoded){
+  try {
+    var bytes = Uint8Array.from(atob(encoded), function(char){ return char.charCodeAt(0); });
+    var envelope = JSON.parse(new TextDecoder('utf-8').decode(bytes));
+    window.__xuanshuNativeResult(envelope.id, envelope.ok, envelope.body, envelope.error || '');
+  } catch (e) {
+    var id = String(nativeRequestSeq);
+    var pending = nativePending[id];
+    if (pending){
+      delete nativePending[id];
+      clearTimeout(pending.timer);
+      pending.reject(new Error('原生回调解析失败'));
+    }
+  }
+};
+
 function fetchNativeMatches(timeoutMs){
   return new Promise(function(resolve, reject){
     var id = String(++nativeRequestSeq);
     var timer = setTimeout(function(){
       delete nativePending[id];
       reject(new Error('原生取数超时'));
-    }, timeoutMs || 9000);
+    }, timeoutMs || 20000);
     nativePending[id] = { resolve: resolve, reject: reject, timer: timer };
     try {
       NATIVE_BRIDGE.postMessage({ action: 'fetchMatches', id: id });
@@ -1694,9 +1710,14 @@ function diagnoseFailure(tries){
   else if (timeout) reason = '取数超时';
   else reason = '数据源暂不可达';
   if (NATIVE_BRIDGE){
+    var nativeMessage = '';
+    for (var n = 0; n < tries.length; n++){
+      var nativeError = String((tries[n].err && tries[n].err.message) || '');
+      if (nativeError) nativeMessage = nativeError;
+    }
     return {
-      reason: reason,
-      tip: '请检查网络后点「刷新数据」重试，已获取的数据仍会保留在设备本地。'
+      reason: nativeMessage || reason,
+      tip: '请检查 iPhone 网络后点「刷新数据」重试，已获取的数据仍会保留在设备本地。'
     };
   }
   return {
@@ -1774,11 +1795,12 @@ function loadMatches(manual){
   }
 
   var usePrimary = sources.length > 1 && sources[0].url === RELAY_SAME;
+  var requestTimeout = NATIVE_BRIDGE ? 20000 : 5500;
   if (usePrimary){
     fetchSource(sources[0], 3500).then(function(json){
       apply(json, sources[0]);
     }).catch(function(firstError){
-      firstSuccessfulSource(sources.slice(1), 5500).then(function(result){
+      firstSuccessfulSource(sources.slice(1), requestTimeout).then(function(result){
         result.tries.unshift({ tag: sources[0].tag, err: firstError });
         apply(result.json, result.src);
       }).catch(function(result){
@@ -1788,7 +1810,7 @@ function loadMatches(manual){
     return;
   }
 
-  firstSuccessfulSource(sources, 5500).then(function(result){
+  firstSuccessfulSource(sources, requestTimeout).then(function(result){
     apply(result.json, result.src);
   }).catch(function(result){
     fail(result.tries || []);
