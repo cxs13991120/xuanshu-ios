@@ -77,8 +77,8 @@ final class NativeBridge: NSObject, WKScriptMessageHandler {
 
     override init() {
         let configuration = URLSessionConfiguration.default
-        configuration.timeoutIntervalForRequest = 10
-        configuration.timeoutIntervalForResource = 14
+        configuration.timeoutIntervalForRequest = 12
+        configuration.timeoutIntervalForResource = 18
         configuration.requestCachePolicy = .reloadIgnoringLocalCacheData
         session = URLSession(configuration: configuration)
         super.init()
@@ -102,7 +102,7 @@ final class NativeBridge: NSObject, WKScriptMessageHandler {
         }
 
         var request = URLRequest(url: url)
-        request.timeoutInterval = 10
+        request.timeoutInterval = 12
         request.setValue(
             "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148",
             forHTTPHeaderField: "User-Agent"
@@ -110,41 +110,54 @@ final class NativeBridge: NSObject, WKScriptMessageHandler {
         request.setValue("https://www.sporttery.cn/", forHTTPHeaderField: "Referer")
         request.setValue("application/json, text/plain, */*", forHTTPHeaderField: "Accept")
         request.setValue("zh-CN,zh;q=0.9", forHTTPHeaderField: "Accept-Language")
+        request.setValue("no-cache", forHTTPHeaderField: "Cache-Control")
 
-        do {
-            let (data, response) = try await session.data(for: request)
-            guard data.count <= 5 * 1024 * 1024 else {
-                sendResult(id: requestID, ok: false, body: "", error: "赛事数据超过安全上限")
+        var lastError: Error?
+        for attempt in 0..<2 {
+            do {
+                let (data, response) = try await session.data(for: request)
+                guard data.count <= 5 * 1024 * 1024 else {
+                    sendResult(id: requestID, ok: false, body: "", error: "赛事数据超过安全上限")
+                    return
+                }
+                guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
+                    let code = (response as? HTTPURLResponse)?.statusCode ?? 0
+                    sendResult(id: requestID, ok: false, body: "", error: "官方数据返回 HTTP \(code)")
+                    return
+                }
+                guard (try? JSONSerialization.jsonObject(with: data)) != nil,
+                      let body = String(data: data, encoding: .utf8) else {
+                    sendResult(id: requestID, ok: false, body: "", error: "赛事数据编码或格式异常")
+                    return
+                }
+                sendResult(id: requestID, ok: true, body: body, error: "")
                 return
+            } catch {
+                lastError = error
+                if attempt == 0 {
+                    try? await Task.sleep(nanoseconds: 350_000_000)
+                }
             }
-            guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
-                let code = (response as? HTTPURLResponse)?.statusCode ?? 0
-                sendResult(id: requestID, ok: false, body: "", error: "官方数据返回 HTTP \(code)")
-                return
-            }
-            guard let body = String(data: data, encoding: .utf8) else {
-                sendResult(id: requestID, ok: false, body: "", error: "赛事数据编码异常")
-                return
-            }
-            sendResult(id: requestID, ok: true, body: body, error: "")
-        } catch {
-            sendResult(id: requestID, ok: false, body: "", error: "赛事数据暂不可达：\(error.localizedDescription)")
         }
+        let detail = lastError?.localizedDescription ?? "未知错误"
+        sendResult(id: requestID, ok: false, body: "", error: "赛事数据暂不可达：\(detail)")
     }
 
     @MainActor
     private func sendResult(id: String, ok: Bool, body: String, error: String) {
         guard let webView else { return }
-        webView.callAsyncJavaScript(
-            "window.__xuanshuNativeResult(id, ok, body, errorMessage);",
-            arguments: [
-                "id": id,
-                "ok": ok,
-                "body": body,
-                "errorMessage": error
-            ],
-            in: nil,
-            in: .page
-        ) { _ in }
+        let envelope: [String: Any] = [
+            "id": id,
+            "ok": ok,
+            "body": body,
+            "error": error
+        ]
+        guard let data = try? JSONSerialization.data(withJSONObject: envelope) else { return }
+        let encoded = data.base64EncodedString()
+        webView.evaluateJavaScript("window.__xuanshuNativeResultB64('\(encoded)');") { _, jsError in
+            if let jsError {
+                print("[Xuanshu native bridge] \(jsError.localizedDescription)")
+            }
+        }
     }
 }
