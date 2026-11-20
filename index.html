@@ -194,6 +194,14 @@ body{
   box-shadow:0 0 0 3px rgba(181,137,74,.14)}
 .field input::placeholder{color:rgba(133,119,103,.7); font-family:var(--serif); font-size:13px}
 .field-help{font-size:10.5px; line-height:1.5; color:var(--ink-3); letter-spacing:.03em}
+.profile-options{
+  position:relative; z-index:1; display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+  margin-top:16px; padding-top:14px; border-top:1px dotted rgba(181,137,74,.38);
+}
+.save-profile{display:flex; align-items:center; gap:8px; cursor:pointer; color:var(--ink-3); font-size:12px}
+.save-profile input{accent-color:var(--cinnabar); width:16px; height:16px}
+.sound-toggle{margin-left:auto; font-size:12px; padding:6px 12px}
+.btn.compact{padding:6px 12px; font-size:12px}
 
 .seg{display:flex; border:1px solid rgba(35,30,25,.16); border-radius:2px; overflow:hidden; background:rgba(255,255,255,.5)}
 .seg button{
@@ -509,11 +517,6 @@ body.ritual-open{overflow:hidden}
         <input id="fBirth" type="date" min="1930-01-01" max="2026-12-31">
       </label>
       <label class="field">
-        <span class="field-label">出生时刻 · 可选</span>
-        <input id="fBirthTime" type="time" aria-describedby="birthTimeHint">
-        <small class="field-help" id="birthTimeHint">留空则只取年月日柱，不臆测时柱。</small>
-      </label>
-      <label class="field">
         <span class="field-label">生　肖</span>
         <select id="fZodiac"></select>
       </label>
@@ -534,6 +537,15 @@ body.ritual-open{overflow:hidden}
 
     <div class="notice soft" id="parlayHint" hidden></div>
 
+    <div class="profile-options">
+      <label class="save-profile">
+        <input id="fSaveProfile" type="checkbox">
+        <span>在本机保存姓名与生辰，下次自动带入</span>
+      </label>
+      <button class="btn compact" id="btnClearProfile" type="button" hidden>清除已存信息</button>
+      <button class="btn compact sound-toggle" id="btnSound" type="button" aria-pressed="true">音效：开</button>
+    </div>
+
     <div class="actions">
       <button class="btn primary" id="btnGo" type="button" aria-controls="cardResult">起卦推演</button>
       <button class="btn" id="btnAgain" type="button" hidden>再换一卦</button>
@@ -543,7 +555,7 @@ body.ritual-open{overflow:hidden}
       <summary>推演口径</summary>
       <div class="manual-body">
         <p><b>历法</b>：按中国农历取月建、日数与时支，起课不再直接套用公历月日。</p>
-        <p><b>命造</b>：由生辰推年月日柱；出生时刻可选，留空只取三柱，日干五行作为日主。</p>
+        <p><b>命造</b>：由出生日期推年月日三柱，以日干五行作为日主。</p>
         <p><b>姓名</b>：区分常见复姓，拆天、人、地、外、总五格，以三才五行作为命格辅证。</p>
         <p><b>字库</b>：姓名库未收录的冷僻字会以固定规则折算近似笔画，并在签文中明确标记。</p>
         <p><b>起卦</b>：年支、农历月日与时支起梅花时课，同时取本卦、互卦、变卦。</p>
@@ -666,10 +678,12 @@ body.ritual-open{overflow:hidden}
 var API = 'https://webapi.sporttery.cn/gateway/jc/football/getMatchCalculatorV1.qry?poolCode=hhad,had&channel=c';
 var RELAY_SAME = 'api/matches';                      /* 本地中转（与本页同源） */
 var RELAY_LOCAL = 'http://127.0.0.1:8899/api/matches'; /* 本地中转（默认端口） */
-var NATIVE_HANDLER = window.webkit && window.webkit.messageHandlers &&
+var IOS_HANDLER = window.webkit && window.webkit.messageHandlers &&
   window.webkit.messageHandlers.xuanshuNative;
-if (NATIVE_HANDLER && typeof NATIVE_HANDLER.postMessage !== 'function') NATIVE_HANDLER = null;
-var NATIVE_BRIDGE = !!NATIVE_HANDLER;
+if (IOS_HANDLER && typeof IOS_HANDLER.postMessage !== 'function') IOS_HANDLER = null;
+var ANDROID_HANDLER = window.XuanshuAndroid &&
+  typeof window.XuanshuAndroid.postMessage === 'function' ? window.XuanshuAndroid : null;
+var NATIVE_BRIDGE = !!(IOS_HANDLER || ANDROID_HANDLER);
 if (NATIVE_BRIDGE) document.documentElement.classList.add('native-app');
 
 var GAN = '甲乙丙丁戊己庚辛壬癸'.split('');
@@ -1094,11 +1108,8 @@ function buildProfile(input){
   var by = Number(bp[0]) || 1990, bm = Number(bp[1]) || 1, bd = Number(bp[2]) || 1;
   var birthDate = new Date(by, bm - 1, bd, 12, 0, 0, 0);
   if (isNaN(birthDate.getTime())) birthDate = new Date(1990, 0, 1, 12, 0, 0, 0);
-  var birthTimeMatch = String(input.birthTime || '').match(/^(\d{2}):(\d{2})$/);
-  var birthHour = birthTimeMatch ? clamp(Number(birthTimeMatch[1]), 0, 23) : null;
-  if (birthHour !== null) birthDate.setHours(birthHour, Number(birthTimeMatch[2]) || 0, 0, 0);
 
-  var birthPillars = pillarsFor(birthDate, birthHour);
+  var birthPillars = pillarsFor(birthDate, null);
   var birthZhiIdx = birthPillars.yearZhiIdx;
   var zIdx = (input.zodiac === null || input.zodiac === undefined || input.zodiac < 0) ? birthZhiIdx : Number(input.zodiac);
   zIdx = clamp(zIdx || 0, 0, 11);
@@ -1118,12 +1129,11 @@ function buildProfile(input){
     nameRoot: dRoot(total) || 1, nameGrid: nameGrid, unknownChars: unknownChars,
     birthZhiIdx: birthZhiIdx, zIdx: zIdx, birthPillars: birthPillars,
     dayMasterWX: dayMasterWX, mingWX: dayMasterWX, mingNum: dRoot(by + bm + bd) || 1,
-    birth: [by, bm, bd], birthTime: birthHour === null ? '' : String(birthHour).padStart(2, '0') + ':' +
-      String(Number(birthTimeMatch[2]) || 0).padStart(2, '0'),
+    birth: [by, bm, bd],
     when: when, y: y, mo: mo, d: d, h: h,
     lunar: lunar, nowPillars: nowPillars,
     hourZhi: hourZhi, gua: gua, guaInfo: guaInfo,
-    key: [name, input.birth, input.birthTime, zIdx, keyTime].join('|')
+    key: [name, input.birth, zIdx, keyTime].join('|')
   };
 }
 
@@ -1317,8 +1327,7 @@ function summaryText(res){
   var P = res.P, main = res.main;
   var whenLabel = '农历' + P.lunar.label + ZHI[P.hourZhi] + '时';
   var birthPillars = P.birthPillars;
-  var birthLabel = birthPillars.year + '年 ' + birthPillars.month + '月 ' + birthPillars.day + '日' +
-    (birthPillars.hour ? ' ' + birthPillars.hour + '时' : '（时柱未定）');
+  var birthLabel = birthPillars.year + '年 ' + birthPillars.month + '月 ' + birthPillars.day + '日三柱';
   var nowLabel = P.nowPillars.year + '年 ' + P.nowPillars.month + '月 ' + P.nowPillars.day + '日 ' +
     P.nowPillars.hour + '时';
   var balance = main.good > main.bad ? '相生为多' : (main.good === main.bad ? '生克各半' : '相制为多');
@@ -1358,7 +1367,7 @@ function esc(value){
 var state = {
   days: [], date: '', matches: [], loading: false, error: '', updated: '',
   fromCache: false, parlay: 3, expanded: false, salt: 0, result: null, whenMode: 'now',
-  lastLoadedAt: 0, divining: false
+  lastLoadedAt: 0, divining: false, audioContext: null
 };
 
 function toast(msg){
@@ -1509,19 +1518,26 @@ function syncParlay(){
 /* ---------- 加载数据 ---------- */
 var CACHE_KEY = 'xuanshu_jc_cache_v1';
 var DRAFT_KEY = 'xuanshu_form_draft_v1';
+var PROFILE_KEY = 'xuanshu_saved_profile_v1';
+var SOUND_KEY = 'xuanshu_sound_enabled_v1';
+var soundEnabled = true;
+try {
+  soundEnabled = localStorage.getItem(SOUND_KEY) !== '0';
+} catch (e) {}
 
 function draftSave(){
   try {
     sessionStorage.setItem(DRAFT_KEY, JSON.stringify({
       name: $('#fName').value,
       birth: $('#fBirth').value,
-      birthTime: $('#fBirthTime').value,
       zodiac: $('#fZodiac').value,
       whenMode: state.whenMode,
       when: $('#fWhen').value,
-      parlay: state.parlay
+      parlay: state.parlay,
+      saveProfile: $('#fSaveProfile').checked
     }));
   } catch (e) {}
+  profileSave();
 }
 
 function draftLoad(){
@@ -1530,7 +1546,7 @@ function draftLoad(){
     if (!draft || typeof draft !== 'object') return;
     $('#fName').value = cleanText(draft.name, '', 12);
     $('#fBirth').value = /^\d{4}-\d{2}-\d{2}$/.test(draft.birth || '') ? draft.birth : '';
-    $('#fBirthTime').value = /^\d{2}:\d{2}$/.test(draft.birthTime || '') ? draft.birthTime : '';
+    $('#fSaveProfile').checked = draft.saveProfile === true;
     var zodiac = Number(draft.zodiac);
     if (zodiac >= 0 && zodiac <= 11) $('#fZodiac').value = String(zodiac);
     state.whenMode = draft.whenMode === 'custom' ? 'custom' : 'now';
@@ -1552,6 +1568,118 @@ function draftLoad(){
     }
     syncZodiacAuto();
   } catch (e) {}
+}
+
+function syncParlaySelection(value){
+  var parlay = Number(value);
+  if (parlay < 2 || parlay > 7) return;
+  state.parlay = parlay;
+  $$('#parlayGroup .pbtn').forEach(function(button){
+    var active = Number(button.dataset.n) === parlay;
+    button.classList.toggle('on', active);
+    button.setAttribute('aria-pressed', active ? 'true' : 'false');
+  });
+}
+
+function profileSave(){
+  var checkbox = $('#fSaveProfile');
+  if (!checkbox || !checkbox.checked) return;
+  try {
+    localStorage.setItem(PROFILE_KEY, JSON.stringify({
+      name: $('#fName').value,
+      birth: $('#fBirth').value,
+      zodiac: $('#fZodiac').value,
+      parlay: state.parlay
+    }));
+    $('#btnClearProfile').hidden = false;
+  } catch (e) {}
+}
+
+function profileLoad(){
+  try {
+    var profile = JSON.parse(localStorage.getItem(PROFILE_KEY) || 'null');
+    if (!profile || typeof profile !== 'object') return;
+    $('#fName').value = cleanText(profile.name, '', 12);
+    $('#fBirth').value = /^\d{4}-\d{2}-\d{2}$/.test(profile.birth || '') ? profile.birth : '';
+    var zodiac = Number(profile.zodiac);
+    if (zodiac >= 0 && zodiac <= 11) $('#fZodiac').value = String(zodiac);
+    syncParlaySelection(profile.parlay);
+    $('#fSaveProfile').checked = true;
+    $('#btnClearProfile').hidden = false;
+    syncZodiacAuto();
+  } catch (e) {}
+}
+
+function profileClear(){
+  try { localStorage.removeItem(PROFILE_KEY); } catch (e) {}
+  $('#fSaveProfile').checked = false;
+  $('#btnClearProfile').hidden = true;
+  toast('已清除本机保存的信息');
+}
+
+function ensureAudio(){
+  if (!soundEnabled) return null;
+  var AudioBuilder = window.AudioContext || window.webkitAudioContext;
+  if (!AudioBuilder) return null;
+  if (!state.audioContext) state.audioContext = new AudioBuilder();
+  if (state.audioContext.state === 'suspended') state.audioContext.resume().catch(function(){});
+  return state.audioContext;
+}
+
+function playTone(freq, duration, volume, delay, type){
+  var ctx = ensureAudio();
+  if (!ctx) return;
+  var start = ctx.currentTime + (delay || 0);
+  var osc = ctx.createOscillator();
+  var gain = ctx.createGain();
+  osc.type = type || 'sine';
+  osc.frequency.setValueAtTime(freq, start);
+  gain.gain.setValueAtTime(0.0001, start);
+  gain.gain.exponentialRampToValueAtTime(volume, start + 0.015);
+  gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.start(start);
+  osc.stop(start + duration + 0.05);
+}
+
+function playBell(freq, volume, delay, duration){
+  playTone(freq, duration || 0.8, volume || 0.045, delay || 0, 'sine');
+  playTone(freq * 2.01, (duration || 0.8) * 0.55, (volume || 0.045) * 0.28, (delay || 0) + 0.01, 'sine');
+}
+
+function playSound(kind, index){
+  if (!soundEnabled) return;
+  if (kind === 'date'){
+    playBell(523.25, 0.035, 0, 0.7);
+    playBell(783.99, 0.022, 0.07, 0.55);
+  } else if (kind === 'parlay'){
+    playTone(392, 0.11, 0.04, 0, 'triangle');
+    playTone(587.33, 0.14, 0.032, 0.055, 'triangle');
+  } else if (kind === 'start'){
+    playTone(110, 1.8, 0.055, 0, 'sine');
+    playTone(164.81, 1.4, 0.032, 0.08, 'sine');
+    playBell(329.63, 0.026, 0.18, 1.1);
+  } else if (kind === 'ritual'){
+    var notes = [220, 246.94, 293.66, 329.63, 392, 440, 523.25, 587.33];
+    playBell(notes[index % notes.length], 0.022, 0, 1.25);
+    playTone(82.41, 0.45, 0.012, 0.08, 'sine');
+  } else if (kind === 'result'){
+    [261.63, 329.63, 392, 523.25].forEach(function(note, i){
+      playBell(note, 0.032, i * 0.11, 1.05);
+    });
+  }
+}
+
+function setSoundEnabled(enabled, persist){
+  soundEnabled = !!enabled;
+  var button = $('#btnSound');
+  button.textContent = soundEnabled ? '音效：开' : '音效：关';
+  button.setAttribute('aria-pressed', soundEnabled ? 'true' : 'false');
+  if (persist){
+    try { localStorage.setItem(SOUND_KEY, soundEnabled ? '1' : '0'); } catch (e) {}
+  }
+  if (soundEnabled && persist) playSound('parlay');
 }
 
 function cacheSave(days, updated){
@@ -1613,6 +1741,7 @@ window.__xuanshuNativeResultB64 = function(encoded){
     }
   }
 };
+window.__xuanshuAndroidResultB64 = window.__xuanshuNativeResultB64;
 
 function fetchNativeMatches(timeoutMs){
   return new Promise(function(resolve, reject){
@@ -1623,8 +1752,13 @@ function fetchNativeMatches(timeoutMs){
     }, timeoutMs || 20000);
     nativePending[id] = { resolve: resolve, reject: reject, timer: timer };
     try {
-      if (!NATIVE_HANDLER) throw new Error('原生消息桥不可用');
-      NATIVE_HANDLER.postMessage({ action: 'fetchMatches', id: id });
+      if (IOS_HANDLER){
+        IOS_HANDLER.postMessage({ action: 'fetchMatches', id: id });
+      } else if (ANDROID_HANDLER){
+        ANDROID_HANDLER.postMessage(JSON.stringify({ action: 'fetchMatches', id: id }));
+      } else {
+        throw new Error('原生消息桥不可用');
+      }
     } catch (e) {
       clearTimeout(timer);
       delete nativePending[id];
@@ -1867,7 +2001,7 @@ function renderResult(res){
   $('#readingLunar').textContent = P.lunar.label;
   $('#readingPillars').textContent = '月纲 ' + P.nowPillars.year + ' · ' + P.nowPillars.month + ' · ' +
     P.nowPillars.day + '；命造 ' + P.birthPillars.year + ' · ' + P.birthPillars.month + ' · ' +
-    P.birthPillars.day + ' · ' + (P.birthPillars.hour || '时柱未定');
+    P.birthPillars.day;
   $('#readingName').textContent = '日主 ' + P.dayMasterWX + ' · 三才 ' + P.nameGrid.three.join('·');
   $('#readingNameDetail').textContent = '天' + P.nameGrid.tian + ' 人' + P.nameGrid.human + ' 地' +
     P.nameGrid.earth + ' 外' + P.nameGrid.outer + ' 总' + P.nameGrid.total +
@@ -1973,6 +2107,26 @@ var RITUAL_STAGES = [
 ];
 var ritualTimer = null;
 
+function randomUnit(){
+  try {
+    var values = new Uint32Array(1);
+    window.crypto.getRandomValues(values);
+    return values[0] / 4294967296;
+  } catch (e) {
+    return Math.random();
+  }
+}
+
+function ritualDurations(reduced){
+  var targetMs = reduced ? 1200 : 15000 + randomUnit() * 10000;
+  var overhead = reduced ? 100 : 440;
+  var weights = [0.10, 0.11, 0.12, 0.14, 0.15, 0.18, 0.20];
+  var remaining = Math.max(500, targetMs - overhead);
+  var durations = weights.map(function(weight){ return remaining * weight; });
+  durations.push(reduced ? 30 : 0);
+  return durations;
+}
+
 function ritualDetail(index, res, isAgain){
   var P = res.P, main = res.main;
   if (index === 0) return isAgain ? '再问一卦，仍候原时课之气。' : RITUAL_STAGES[index].detail;
@@ -1994,10 +2148,7 @@ function runRitual(res, isAgain, done){
   var go = $('#btnGo');
   var wrap = $('.wrap');
   var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var fullDurations = [500, 650, 600, 750, 700, 850, 750, 500];
-  var repeatDurations = [250, 300, 280, 380, 350, 430, 380, 250];
-  var durations = (reduced ? fullDurations.map(function(){ return 110; }) :
-    (isAgain ? repeatDurations : fullDurations));
+  var durations = ritualDurations(reduced);
 
   clearTimeout(ritualTimer);
   stagesBox.innerHTML = '';
@@ -2035,6 +2186,7 @@ function runRitual(res, isAgain, done){
       go.textContent = '起卦推演';
       $('#btnAgain').disabled = false;
       state.divining = false;
+      playSound('result');
       done();
     }, reduced ? 60 : 260);
   }
@@ -2054,6 +2206,7 @@ function runRitual(res, isAgain, done){
     progress.setAttribute('aria-valuenow', String(percent));
     progress.setAttribute('aria-valuetext', RITUAL_STAGES[index].title);
     if (item) item.classList.add('on');
+    playSound('ritual', index);
     if (index + 1 >= RITUAL_STAGES.length){
       finish();
       return;
@@ -2105,6 +2258,7 @@ function initParlay(){
       });
       this.classList.add('on');
       this.setAttribute('aria-pressed', 'true');
+      playSound('parlay');
       draftSave();
     });
     box.appendChild(b);
@@ -2140,7 +2294,6 @@ function doDivine(salt, isAgain){
   if (state.divining) return;
   var name = $('#fName').value.trim();
   var birth = $('#fBirth').value;
-  var birthTime = $('#fBirthTime').value;
   var zVal = Number($('#fZodiac').value);
   var when = getWhen();
   var fNotice = $('#formNotice');
@@ -2166,7 +2319,7 @@ function doDivine(salt, isAgain){
   notice(fNotice, '', false);
 
   var P = buildProfile({
-    name: name, birth: birth, birthTime: birthTime,
+    name: name, birth: birth,
     zodiac: zVal < 0 ? null : zVal, when: when
   });
   var res = divine(P, state.matches, state.parlay, salt || 0, null);
@@ -2217,7 +2370,11 @@ function bindEvents(){
     draftSave();
   });
 
-  $('#btnGo').addEventListener('click', function(){ state.salt = 0; doDivine(0, false); });
+  $('#btnGo').addEventListener('click', function(){
+    state.salt = 0;
+    playSound('start');
+    doDivine(0, false);
+  });
 
   $('#btnAgain').addEventListener('click', function(){
     if (!state.result) return;
@@ -2233,8 +2390,9 @@ function bindEvents(){
   });
 
   $('#fBirth').addEventListener('change', syncZodiacAuto);
+  $('#fBirth').addEventListener('change', function(){ playSound('date'); });
   $('#fBirth').addEventListener('input', syncZodiacAuto);
-  ['#fName', '#fBirth', '#fBirthTime', '#fZodiac', '#fWhen'].forEach(function(selector){
+  ['#fName', '#fBirth', '#fZodiac', '#fWhen'].forEach(function(selector){
     var field = $(selector);
     field.addEventListener('input', draftSave);
     field.addEventListener('change', draftSave);
@@ -2248,6 +2406,22 @@ function bindEvents(){
     if (document.hidden || state.loading) return;
     if (state.lastLoadedAt && Date.now() - state.lastLoadedAt > 5 * 60 * 1000) loadMatches(false);
   });
+
+  $('#fSaveProfile').addEventListener('change', function(){
+    if (this.checked){
+      profileSave();
+      toast('已在本机保存个人信息');
+    } else {
+      try { localStorage.removeItem(PROFILE_KEY); } catch (e) {}
+      $('#btnClearProfile').hidden = true;
+      toast('已关闭信息保存');
+    }
+  });
+  $('#btnClearProfile').addEventListener('click', profileClear);
+  $('#btnSound').addEventListener('click', function(){
+    setSoundEnabled(!soundEnabled, true);
+  });
+  document.addEventListener('pointerdown', function(){ ensureAudio(); }, { once: true });
 }
 
 /* ---------- 启动 ---------- */
@@ -2257,12 +2431,14 @@ function boot(){
   syncZodiacAuto();
   initParlay();
   bindEvents();
+  setSoundEnabled(soundEnabled, false);
   $('#fBirth').max = localDateValue();
   var now = new Date();
   $('#fWhen').value = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' +
     String(now.getDate()).padStart(2, '0') + 'T' + String(now.getHours()).padStart(2, '0') + ':' +
     String(now.getMinutes()).padStart(2, '0');
   draftLoad();
+  profileLoad();
   loadMatches(false);
 }
 
